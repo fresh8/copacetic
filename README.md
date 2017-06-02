@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/fresh8/copacetic.svg?style=svg)](https://circleci.com/gh/fresh8/copacetic)
+
 # Health
 ---
 A package to help your service check the health of its dependencies.
