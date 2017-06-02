@@ -1,4 +1,6 @@
+[![Coverage Status](https://coveralls.io/repos/github/fresh8/copacetic/badge.svg?branch=master)](https://coveralls.io/github/fresh8/copacetic?branch=master)
 [![CircleCI](https://circleci.com/gh/fresh8/copacetic.svg?style=svg)](https://circleci.com/gh/fresh8/copacetic)
+
 
 # Health
 ---
