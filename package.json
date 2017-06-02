@@ -9,7 +9,7 @@
     "test": "node_modules/.bin/_mocha ./test/**",
     "lint": "node_modules/.bin/standard \"test/**/*.js\" \"lib/**/*.js\""
   },
-  { "engines" : { "node" : ">=6.9.0" } }
+  "engines" : { "node" : ">=6.9.0" },
   "standard": {
     "globals": [
       "describe",
