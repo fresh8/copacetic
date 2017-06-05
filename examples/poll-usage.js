@@ -1,5 +1,5 @@
-const Copacetic = require('f8-copacetic')
-const level = require('f8-copacetic').dependencyLevel
+const Copacetic = require('@fresh8/copacetic')
+const level = require('@fresh8/copacetic').dependencyLevel
 const copacetic = Copacetic('My-Thing')
 
 copacetic

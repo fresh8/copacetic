@@ -1,6 +1,6 @@
 {
-  "name": "@fresh8/f8-copacetic",
-  "version": "1.0.1",
+  "name": "@fresh8/copacetic",
+  "version": "2.0.0",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,9 @@
     "test": "node_modules/.bin/_mocha ./test/**",
     "lint": "node_modules/.bin/standard \"test/**/*.js\" \"lib/**/*.js\""
   },
-  "engines" : { "node" : ">=6.9.0" },
+  "engines": {
+    "node": ">=6.9.0"
+  },
   "standard": {
     "globals": [
       "describe",

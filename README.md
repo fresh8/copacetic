@@ -11,13 +11,13 @@ Node v6.4.0 and above
 
 ## Installation
 ```
-npm install @fresh8/f8-copacetic --save
+npm install @fresh8/copacetic --save
 ```
 
 #### Quick Start
 ```javascript
-const Copacetic = require('f8-copacetic')
-const level = require('f8-copacetic').dependencyLevel
+const Copacetic = require('@fresh8/copacetic')
+const level = require('@fresh8/copacetic').dependencyLevel
 
 const copacetic = Copacetic()
 
