@@ -70,8 +70,6 @@ copacetic
     * [.stop()](#Copacetic+stop)
     * [.checkAll([parallel])](#Copacetic+checkAll) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.check([name], [dependencies], [retries], [parallel])](#Copacetic+check) ⇒ [<code>Copacetic</code>](#Copacetic)
-    * [._checkOne(name)](#Copacetic+_checkOne) ⇒ <code>Promise</code>
-    * [._checkMany(dependencies, parallel)](#Copacetic+_checkMany) ⇒ <code>Promise</code>
     * ["healthy"](#Copacetic+event_healthy)
     * ["unhealthy"](#Copacetic+event_unhealthy)
     * ["health"](#Copacetic+event_health)
