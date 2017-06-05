@@ -11,7 +11,7 @@ Node v6.4.0 and above
 
 ## Installation
 ```
-npm install f8-copacetic --save
+npm install @fresh8/f8-copacetic --save
 ```
 
 #### Quick Start
