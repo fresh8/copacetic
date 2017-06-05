@@ -2,9 +2,9 @@ const dependencyLevel = require('./lib/dependency-level')
 
 const Copacetic = require('./lib/copacetic')
 
-module.exports.dependencyLevel = dependencyLevel
+module.exports = name => new Copacetic(name)
 
-module.exports = (logger, name) => new Copacetic(logger, name)
+module.exports.dependencyLevel = dependencyLevel
 
 module.exports.Middleware = require('./lib/middleware')
 
