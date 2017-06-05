@@ -1,6 +1,6 @@
 {
-  "name": "@fresh8/f8-copacetic",
-  "version": "1.0.1",
+  "name": "@fresh8/copacetic",
+  "version": "2.0.0",
   "dependencies": {
     "acorn": {
       "version": "5.0.3",

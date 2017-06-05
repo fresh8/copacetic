@@ -1,5 +1,5 @@
-const Copacetic = require('copacetic')
-const Middleware = require('copacetic').Middleware
+const Copacetic = require('@fresh8/copacetic')
+const Middleware = require('@fresh8/copacetic').Middleware
 const express = require('express')
 
 // register health dependencies...
