@@ -41,14 +41,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ConnectedVentures/f8-node-health-package.git"
+    "url": "git+https://github.com/fresh8/copacetic.git"
   },
   "author": "Toby Coleman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ConnectedVentures/f8-node-health-package/issues"
+    "url": "https://github.com/fresh8/copacetic/issues"
   },
-  "homepage": "https://github.com/ConnectedVentures/f8-node-health-package#readme",
+  "homepage": "https://github.com/fresh8/copacetic#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.13.1",
