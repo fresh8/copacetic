@@ -58,11 +58,15 @@
     "standard": "^10.0.2"
   },
   "dependencies": {
+    "codependency": "^2.0.1",
     "human-interval": "^0.1.6",
     "lodash.isobject": "^3.0.2",
-    "mongodb": "^2.2.27",
     "node-fetch": "^1.7.0",
     "node-noop": "^1.0.0",
     "precond": "^0.2.3"
+  },
+  "optionalPeerDependencies": {
+    "redis": "2.x",
+    "mongodb": "2.x"
   }
 }
