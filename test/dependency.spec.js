@@ -1,7 +1,13 @@
 const expect = require('chai').expect
 const nock = require('nock')
 
-const Dependency = require('../lib/dependency')
+const CodependencyMock = require('./mocks/codependency')
+const Injector = require('../lib/util/injector')
+const Dependency = require('../lib/dependency')(
+  Injector(CodependencyMock({
+    'node-fetch': require('node-fetch')
+  }))
+)
 
 describe('Dependency', () => {
   let dependency

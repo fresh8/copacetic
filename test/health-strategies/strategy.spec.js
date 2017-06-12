@@ -3,21 +3,29 @@ const expect = require('chai').expect
 const Strategy = require('../../lib/health-strategies/strategy')
 
 describe('strategy', () => {
-  const strategy = new Strategy()
+  // const strategy = new Strategy()
+
+  class SubStrat extends Strategy {}
+
+  const instance = new SubStrat()
+
+  it('should not be constructed directly', () => {
+    expect(() => new Strategy()).to.throw()
+  })
 
   it('should provide a timeout of 1 second by default', () => {
-    expect(strategy.timeout).to.equal('1 second')
+    expect(instance.timeout).to.equal('1 second')
   })
 
   describe('check', () => {
     it('should be implemented', () => {
-      expect(strategy.check).to.throw()
+      expect(instance.check).to.throw()
     })
   })
 
   describe('cleanup', () => {
     it('should be implemented', () => {
-      expect(strategy.cleanup).to.throw()
+      expect(instance.cleanup).to.throw()
     })
   })
 })
