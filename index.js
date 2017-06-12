@@ -6,7 +6,9 @@ const Copacetic = require('./lib/copacetic')
 const HealthFactoryProvider = require('./lib/health-strategies').HealthFactoryProvider
 
 const injector = require('./lib/util').Injector(
-  require('codependency').register(module)
+  require('codependency').register(module, {
+    index: ['optionalPeerDependencies', 'devDependencies']
+  })
 )
 
 module.exports = name => Copacetic(Dependency(injector))(name)

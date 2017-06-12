@@ -3,8 +3,6 @@ const expect = require('chai').expect
 const Strategy = require('../../lib/health-strategies/strategy')
 
 describe('strategy', () => {
-  // const strategy = new Strategy()
-
   class SubStrat extends Strategy {}
 
   const instance = new SubStrat()

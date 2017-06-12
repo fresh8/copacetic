@@ -1,9 +1,5 @@
 const expect = require('chai').expect
 
-const CodependencyMock = require('../../mocks/codependency')
-const Injector = require('../../../lib/util/injector')
-const MongodbStrategyFactory = require('../../../lib/health-strategies/mongodb')
-
 describe('MongodbStrategy', () => {
   const mockMongodbClient = {
     MongoClient: {
@@ -25,11 +21,19 @@ describe('MongodbStrategy', () => {
     }
   }
 
-  const MongodbStrategy = MongodbStrategyFactory(
-    Injector(CodependencyMock({
-      mongodb: mockMongodbClient
-    }))
-  )
+  let MongodbStrategy
+
+  before(() => {
+    const CodependencyMock = require('../../mocks/codependency')
+    const Injector = require('../../../lib/util/injector')
+    const MongodbStrategyFactory = require('../../../lib/health-strategies/mongodb')
+
+    MongodbStrategy = MongodbStrategyFactory(
+      Injector(CodependencyMock({
+        mongodb: mockMongodbClient
+      }))
+    )
+  })
 
   it('should export a function', () => {
     expect(MongodbStrategy).to.be.a('function')

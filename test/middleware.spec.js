@@ -1,10 +1,10 @@
 const expect = require('chai').expect
 const nock = require('nock')
 
-const Copacetic = require('../')
-const Middleware = require('../').Middleware
-
 describe('middleware', () => {
+  const Copacetic = require('../')
+  const Middleware = require('../').Middleware
+
   const nockIt = () => {
     nock('http://one-example.com')
         .get('/')

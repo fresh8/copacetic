@@ -1,20 +1,27 @@
 const expect = require('chai').expect
 const noop = require('node-noop').noop
 
-const CodependencyMock = require('../../mocks/codependency')
-const Injector = require('../../../lib/util/injector')
-const AdapterFactoryProvider = require('../../../lib/health-strategies/providers').AdapterFactoryProvider
-
 describe('AdapterFactoryProvider', () => {
-  const injector = Injector(CodependencyMock({
-    aClient: () => 'a client',
-    bClient: () => 'b client'
-  }))
+  let injector
+  let adapters
+  let AdapterFactoryProvider
 
-  const adapters = {
-    aClient: (impl) => impl(),
-    bClient: (impl) => impl()
-  }
+  before(() => {
+    const CodependencyMock = require('../../mocks/codependency')
+    const Injector = require('../../../lib/util/injector')
+    AdapterFactoryProvider = require('../../../lib/health-strategies/providers')
+      .AdapterFactoryProvider
+
+    injector = Injector(CodependencyMock({
+      aClient: () => 'a client',
+      bClient: () => 'b client'
+    }))
+
+    adapters = {
+      aClient: (impl) => impl(),
+      bClient: (impl) => impl()
+    }
+  })
 
   it('should export a function', () => {
     expect(AdapterFactoryProvider).to.be.a('function')

@@ -1,16 +1,20 @@
 const expect = require('chai').expect
 const nock = require('nock')
 
-const CodependencyMock = require('./mocks/codependency')
-const Injector = require('../lib/util/injector')
-const Dependency = require('../lib/dependency')(
-  Injector(CodependencyMock({
-    'node-fetch': require('node-fetch')
-  }))
-)
-
 describe('Dependency', () => {
+  let Dependency
   let dependency
+
+  before(() => {
+    const CodependencyMock = require('./mocks/codependency')
+    const Injector = require('../lib/util/injector')
+
+    Dependency = require('../lib/dependency')(
+      Injector(CodependencyMock({
+        'node-fetch': require('node-fetch')
+      }))
+    )
+  })
 
   beforeEach(() => {
     dependency = Dependency({ name: 'test-dependency', url: 'http://example.com' })

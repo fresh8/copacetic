@@ -1,20 +1,19 @@
 const expect = require('chai').expect
 const nock = require('nock')
 
-const CodependencyMock = require('../../mocks/codependency')
-const Injector = require('../../../lib/util/injector')
-const HttpStrategyFactory = require('../../../lib/health-strategies/http')
-
 describe('HttpStrategy', () => {
   describe('when using node-fetch', () => {
-    const HttpStrategy = HttpStrategyFactory(
-      Injector(CodependencyMock({
-        'node-fetch': require('node-fetch')
-      }))
-    )
+    let HttpStrategy
 
-    it('should export a function', () => {
-      expect(HttpStrategyFactory).to.be.a('function')
+    before(() => {
+      const CodependencyMock = require('../../mocks/codependency')
+      const Injector = require('../../../lib/util/injector')
+      const HttpStrategyFactory = require('../../../lib/health-strategies/http')
+      HttpStrategy = HttpStrategyFactory(
+        Injector(CodependencyMock({
+          'node-fetch': require('node-fetch')
+        }))
+      )
     })
 
     it('should return a health strategy', () => {
