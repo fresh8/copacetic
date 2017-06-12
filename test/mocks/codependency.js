@@ -1,5 +1,4 @@
 module.exports = (mockModules) => {
-
   return (moduleName, opts) => {
     const resolved = mockModules[moduleName]
 
