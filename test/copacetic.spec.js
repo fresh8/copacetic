@@ -10,7 +10,7 @@ describe('Copacetic', () => {
   })
 
   it('should return an instance of Copacetic', () => {
-    expect(Copacetic().to.be.a('object'))
+    expect(Copacetic()).to.be.a('object')
   })
 
   describe('isCopaceticy', () => {
