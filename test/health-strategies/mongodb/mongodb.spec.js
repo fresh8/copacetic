@@ -52,8 +52,6 @@ describe('MongodbStrategy', () => {
         })
     })
 
-
-
     it('should return true when mongo is healthy', () => {
       const strategy = MongodbStrategy()
 
@@ -107,7 +105,7 @@ describe('MongodbStrategy', () => {
       mockMongodbClient.MongoClient.shouldAccept = false
 
       const strategy = MongodbStrategy()
-    
+
       strategy
         .check('some-fake-url')
         .catch((err) => {

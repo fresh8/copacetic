@@ -15,11 +15,11 @@ describe('HealthFactoryProvider', () => {
   }
 
   const injector = Injector(CodependencyMock({
-    'node-fetch': noop,
+    'node-fetch': noop
   }))
 
   const adapters = {
-    'node-fetch': () => ({ request : noop }),
+    'node-fetch': () => ({ request: noop })
   }
 
   const AdapterFactory = AdapterFactoryProvider(adapters)
@@ -40,7 +40,7 @@ describe('HealthFactoryProvider', () => {
     expect(strategy.adapter).to.be.a('object')
     expect(strategy.adapter.request).to.be.a('function')
 
-    const strategyWithCustomAdapter = StrategyFactory({ request : noop, other: noop })
+    const strategyWithCustomAdapter = StrategyFactory({ request: noop, other: noop })
     expect(strategyWithCustomAdapter.adapter.request).to.be.a('function')
     expect(strategyWithCustomAdapter.adapter.other).to.be.a('function')
 

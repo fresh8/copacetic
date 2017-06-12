@@ -7,7 +7,7 @@
     "coverage": "nyc npm test && nyc report --reporter=lcov",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "test": "node_modules/.bin/_mocha ./test/**",
-    "lint": "node_modules/.bin/standard \"test/**/*.js\" \"lib/**/*.js\""
+    "lint": "node_modules/.bin/standard \"test/**/*.js\" \"lib/**/*.js\" --fix"
   },
   "engines": {
     "node": ">=6.9.0"

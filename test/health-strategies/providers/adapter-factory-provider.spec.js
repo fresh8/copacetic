@@ -6,7 +6,6 @@ const Injector = require('../../../lib/util/injector')
 const AdapterFactoryProvider = require('../../../lib/health-strategies/providers').AdapterFactoryProvider
 
 describe('AdapterFactoryProvider', () => {
-
   const injector = Injector(CodependencyMock({
     aClient: () => 'a client',
     bClient: () => 'b client'
