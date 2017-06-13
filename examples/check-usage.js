@@ -15,7 +15,9 @@ copacetic
   .registerDependency({
     name: 'My-Database',
     url: 'mongodb://localhost/some-db',
-    healthStrategy: 'mongodb'
+    strategy: {
+      type: 'mongodb'
+    }
   })
 
 // check the health of all services once
