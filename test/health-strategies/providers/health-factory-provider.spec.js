@@ -9,7 +9,8 @@ describe('HealthFactoryProvider', () => {
 
   const injector = Injector(CodependencyMock({
     'node-fetch': noop,
-    'mongodb': noop
+    'mongodb': noop,
+    'ioredis': noop
   }))
 
   it('should export a function', () => {
@@ -32,5 +33,18 @@ describe('HealthFactoryProvider', () => {
 
     expect(mongoStrategy.check).to.be.a('function')
     expect(mongoStrategy.adapter.connect).to.be.a('function')
+  })
+
+  it('should return a redis strategy', () => {
+    const mongoStrategy = HealthFactoryProvider(injector)({ type: 'redis' })
+
+    expect(mongoStrategy.check).to.be.a('function')
+    expect(mongoStrategy.adapter.connect).to.be.a('function')
+  })
+
+  it('should return null if a strategy is not available', () => {
+    const notAStrategy = HealthFactoryProvider(injector)({ type: 'not-implemented' })
+
+    expect(notAStrategy).to.equal(null)
   })
 })
