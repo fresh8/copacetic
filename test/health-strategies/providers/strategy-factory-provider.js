@@ -15,6 +15,8 @@ describe('StrategyFactoryProvider', () => {
     }
   }
 
+  const NotAStrategyFactory = (adapter, opts) => new NotAStrategy(adapter, opts)
+
   before(() => {
     const CodependencyMock = require('../../mocks/codependency')
     const Injector = require('../../../lib/util/injector')
@@ -42,7 +44,7 @@ describe('StrategyFactoryProvider', () => {
 
   it('should create a new strategy', () => {
     console.log(injector)
-    const StrategyFactory = StrategyFactoryProvider(NotAStrategy, AdapterFactory)(injector)
+    const StrategyFactory = StrategyFactoryProvider(NotAStrategyFactory, AdapterFactory)(injector)
 
     const strategy = StrategyFactory()
     expect(strategy instanceof NotAStrategy).to.equal(true)

@@ -13,7 +13,7 @@ copacetic
     url: 'http://example.com',
   })
 
-// poll every service until their is a hard dependency failure
+// Poll every service until their is a hard dependency failure
 copacetic
   .pollAll({ interval: '1 minute 30 seconds' })
   .on('health', (healthInfoArr) => {
@@ -22,7 +22,7 @@ copacetic
     }
   })
 
-// poll every service until their is a hard dependency failure
+// Poll every service until their is a hard dependency failure
 copacetic
   .poll({
     interval: '1 minute 30 seconds',
@@ -32,6 +32,6 @@ copacetic
   })
   .on('health', (healthInfoArr) => {
     if (!copacetic.isHealthy) {
-      copacetic.stop()
+      // Handle degraded state ...
     }
   })
