@@ -1,57 +1,3 @@
-# Copacetic
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![Coverage Status](https://coveralls.io/repos/github/fresh8/copacetic/badge.svg?branch=master)](https://coveralls.io/github/fresh8/copacetic?branch=master)
-[![CircleCI](https://circleci.com/gh/fresh8/copacetic.svg?style=svg)](https://circleci.com/gh/fresh8/copacetic)
-
-A package to help your service check the health of its dependencies.
-
-
-## Requirements
-Node v6.4.0 and above
-
-## Installation
-```
-npm install @fresh8/copacetic --save
-```
-
-#### Quick Start
-```javascript
-const Copacetic = require('@fresh8/copacetic')
-const level = require('@fresh8/copacetic').dependencyLevel
-
-const copacetic = Copacetic()
-
-// Register a dependency
-copacetic.registerDependency({
-  name: 'My-Dependency',
-  url: 'https://my-Dependency.io',
-  // Defaults to SOFT
-  dependency: level.HARD
-})
-
-
-// Check its health
-copacetic
-  .check({
-    name: 'My-Dependency',
-    retries: 2
-  })
-  .on('healthy', (Dependency) => {
-    /**
-     * { name: 'My-Dependency',
-     *   healthy: true/false,
-     *   lastChecked: Date,
-     *   level: 'SOFT'
-     * }
-     */
-  })
-  .on('unhealthy', (Dependency) => {
-    // Handle degraded state...
-  })
-```
-
-<a name="Copacetic"></a>
-
 <a name="Copacetic"></a>
 
 ## Copacetic ⇐ <code>EventEmitter</code>
@@ -71,6 +17,8 @@ copacetic
     * [.stop()](#Copacetic+stop)
     * [.checkAll([parallel])](#Copacetic+checkAll) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.check([name], [dependencies], [retries], [parallel])](#Copacetic+check) ⇒ [<code>Copacetic</code>](#Copacetic)
+    * [._checkOne(name)](#Copacetic+_checkOne) ⇒ <code>Promise</code>
+    * [._checkMany(dependencies, parallel)](#Copacetic+_checkMany) ⇒ <code>Promise</code>
     * ["healthy"](#Copacetic+event_healthy)
     * ["unhealthy"](#Copacetic+event_unhealthy)
     * ["health"](#Copacetic+event_health)
@@ -100,7 +48,7 @@ copacetic
 
 | Param | Type |
 | --- | --- |
-| dependency | <code>Dependency</code> \| <code>String</code> |
+| dependency | <code>Dependency</code> \| <code>String</code> | 
 
 <a name="Copacetic+isDependencyRegistered"></a>
 
@@ -110,7 +58,7 @@ copacetic
 
 | Param | Type |
 | --- | --- |
-| dependency | <code>Dependency</code> \| <code>String</code> |
+| dependency | <code>Dependency</code> \| <code>String</code> | 
 
 <a name="Copacetic+registerDependency"></a>
 
@@ -143,9 +91,9 @@ Polls the health of all registered dependencies
 
 | Param | Type | Default |
 | --- | --- | --- |
-| [interval] | <code>String</code> | <code>&#x27;5 seconds&#x27;</code> |
-| [parallel] | <code>Boolean</code> | <code>true</code> |
-| [schedule] | <code>String</code> | <code>&#x27;start&#x27;</code> |
+| [interval] | <code>String</code> | <code>&#x27;5 seconds&#x27;</code> | 
+| [parallel] | <code>Boolean</code> | <code>true</code> | 
+| [schedule] | <code>String</code> | <code>&#x27;start&#x27;</code> | 
 
 <a name="Copacetic+poll"></a>
 
@@ -230,6 +178,27 @@ copacetic.check({ dependencies: [
   // [{ name: String, health: Boolean, level: HARD/SOFT, lastCheck: Date }]
 })
 ```
+<a name="Copacetic+_checkOne"></a>
+
+### copacetic._checkOne(name) ⇒ <code>Promise</code>
+**Kind**: instance method of [<code>Copacetic</code>](#Copacetic)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>String</code> | The name used to identify a dependency |
+
+<a name="Copacetic+_checkMany"></a>
+
+### copacetic._checkMany(dependencies, parallel) ⇒ <code>Promise</code>
+Checks an array of dependencies in parallel or sequantially
+
+**Kind**: instance method of [<code>Copacetic</code>](#Copacetic)  
+
+| Param | Type |
+| --- | --- |
+| dependencies | <code>Array.&lt;Dependency&gt;</code> | 
+| parallel | <code>Boolean</code> | 
+
 <a name="Copacetic+event_healthy"></a>
 
 ### "healthy"

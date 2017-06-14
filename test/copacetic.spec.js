@@ -1,17 +1,34 @@
-const expect = require('chai').expect
-const nock = require('nock')
-
-const Copacetic = require('../lib/copacetic')
-const dependencyLevel = require('../lib/dependency-level')
-
 describe('Copacetic', () => {
+  const expect = require('chai').expect
+  const nock = require('nock')
+
+  let Copacetic
+  let dependencyLevel
+
+  before(() => {
+    const Dependency = require('../lib/dependency')
+    const Injector = require('../lib/util/injector')
+    const CodependencyMock = require('./mocks/codependency')
+
+    dependencyLevel = require('../lib/dependency-level')
+    Copacetic = require('../lib/copacetic')(
+      Dependency(Injector(CodependencyMock({
+        'node-fetch': require('node-fetch')
+      })))
+    )
+  })
+
   it('should export a function', () => {
     expect(Copacetic).to.be.a('function')
   })
 
-  describe('isCopaceticy', () => {
+  it('should return an instance of Copacetic', () => {
+    expect(Copacetic()).to.be.a('object')
+  })
+
+  describe('isCopacetic', () => {
     it('should return true if a hard dependency is unhealthy', () => {
-      const copacetic = new Copacetic()
+      const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com',
@@ -30,7 +47,7 @@ describe('Copacetic', () => {
     })
 
     it('should return false if a soft dependency is unhealthy', () => {
-      const copacetic = new Copacetic()
+      const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com',
@@ -49,7 +66,7 @@ describe('Copacetic', () => {
     })
 
     it('should return false if all dependencies are health', () => {
-      const copacetic = new Copacetic()
+      const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com',
@@ -69,13 +86,13 @@ describe('Copacetic', () => {
   })
 
   describe('getCopaceticInfo', () => {
-    const copacetic = new Copacetic()
-    copacetic.registerDependency({
-      name: 'My-Dependency',
-      url: 'http://example.com'
-    })
-
     it('should return the health info for all registered dependencies', () => {
+      const copacetic = Copacetic()
+      copacetic.registerDependency({
+        name: 'My-Dependency',
+        url: 'http://example.com'
+      })
+
       expect(copacetic.healthInfo).to.deep.equal(
         [
           {
@@ -90,13 +107,15 @@ describe('Copacetic', () => {
   })
 
   describe('getDependency()', () => {
-    const copacetic = new Copacetic()
-    copacetic.registerDependency({
-      name: 'My-Dependency',
-      url: 'http://example.com'
-    })
+    let copacetic
 
     it('should look up a dependency given a dependency name', () => {
+      copacetic = Copacetic()
+      copacetic.registerDependency({
+        name: 'My-Dependency',
+        url: 'http://example.com'
+      })
+
       expect(copacetic.getDependency('My-Dependency').name).to.equal('My-Dependency')
     })
 
@@ -108,13 +127,15 @@ describe('Copacetic', () => {
   })
 
   describe('isDependencyRegistered', () => {
-    const copacetic = new Copacetic()
-    copacetic.registerDependency({
-      name: 'My-Dependency',
-      url: 'http://example.com'
-    })
+    let copacetic
 
     it('should return true if a dependency exists', () => {
+      copacetic = Copacetic()
+      copacetic.registerDependency({
+        name: 'My-Dependency',
+        url: 'http://example.com'
+      })
+
       expect(copacetic.isDependencyRegistered('My-Dependency')).to.equal(true)
     })
 
@@ -124,9 +145,10 @@ describe('Copacetic', () => {
   })
 
   describe('registerDependency()', () => {
-    const copacetic = new Copacetic()
+    let copacetic
 
     it('should register a dependency if it does not exist', () => {
+      copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
@@ -144,9 +166,11 @@ describe('Copacetic', () => {
   })
 
   describe('deregister()', () => {
-    const copacetic = new Copacetic()
+    let copacetic
 
     it('should deregister a dependency if it does exist', () => {
+      copacetic = Copacetic()
+
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
@@ -158,13 +182,13 @@ describe('Copacetic', () => {
     })
 
     it('should throw an error if the dependency does not exist', () => {
-      expect(() => copacetic.deregisterDependency('My-Dependency')).to.throw(Error)
+      expect(() => copacetic.deregisterDependency('My-Dependencyyy')).to.throw(Error)
     })
   })
 
   describe('checkAll()', () => {
     it('should check the health of all registered dependencies', () => {
-      const copacetic = new Copacetic()
+      const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
@@ -204,13 +228,15 @@ describe('Copacetic', () => {
 
   describe('check()', () => {
     describe('when checking one dependency', () => {
-      const copacetic = new Copacetic()
-      copacetic.registerDependency({
-        name: 'My-Dependency',
-        url: 'http://example.com'
-      })
+      let copacetic
 
       it('should emit an "healthy" event when checking a single healthy dependency', () => {
+        copacetic = Copacetic()
+        copacetic.registerDependency({
+          name: 'My-Dependency',
+          url: 'http://example.com'
+        })
+
         nock('http://example.com')
             .get('/')
             .reply(200)
@@ -245,17 +271,17 @@ describe('Copacetic', () => {
     })
 
     describe('when checking multiple dependencies', () => {
-      const copacetic = new Copacetic()
-      copacetic.registerDependency({
-        name: 'My-Dependency',
-        url: 'http://example.com'
-      })
-      copacetic.registerDependency({
-        name: 'My-Other-Dependency',
-        url: 'http://dankdependency.com'
-      })
-
       it('should emit a "health" event when checking dependencies', () => {
+        let copacetic = Copacetic()
+        copacetic.registerDependency({
+          name: 'My-Dependency',
+          url: 'http://example.com'
+        })
+        .registerDependency({
+          name: 'My-Other-Dependency',
+          url: 'http://dankdependency.com'
+        })
+
         nock('http://example.com')
             .get('/')
             .reply(200)
@@ -293,7 +319,7 @@ describe('Copacetic', () => {
 
   describe('poll()', () => {
     it('should emit a "health" event, describing the status of dependencies', () => {
-      const copacetic = new Copacetic()
+      const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
@@ -340,7 +366,7 @@ describe('Copacetic', () => {
 
   describe('stop()', () => {
     it('should stop polling dependencies', () => {
-      const copacetic = new Copacetic()
+      const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
