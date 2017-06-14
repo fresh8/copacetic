@@ -2,7 +2,7 @@ const Copacetic = require('@fresh8/copacetic')
 const Middleware = require('@fresh8/copacetic').Middleware
 const express = require('express')
 
-// register health dependencies...
+// Register health dependencies...
 const copacetic = Copacetic('my-thing')
 const app = express()
 
@@ -13,7 +13,7 @@ copacetic
     level: level.HARD
   })
 
-// you might want to keep health information private
+// You might want to keep health information private
 /**
  * @example
  * {
@@ -35,8 +35,8 @@ app.get('/_descriptiveHealthInformation', Middleware({
   interval: '5 seconds',
 }))
 
-// just returns a status code. 200 if health, 503 if not
-// copacetic is already polling, so an inteval is not needed
+// Just returns a status code. 200 if health, 503 if not
+// Copacetic is already polling, so an inteval is not needed
 app.get('/health', Middleware({
   copacetic,
   verbose: false
