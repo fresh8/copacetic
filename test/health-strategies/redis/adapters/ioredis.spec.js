@@ -1,5 +1,4 @@
 const expect = require('chai').expect
-const noop = require('node-noop').noop
 const MockIORedisClient = require('../../../mocks/ioredis')
 
 describe('RedisStrategy - using the ioredis adapter', () => {
@@ -45,7 +44,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
     })
 
     it('should have a isConnected property', () => {
-      expect(RedisStrategy().adapter.isConnected).to.be.defined
+      expect(RedisStrategy().adapter.isConnected).to.equal(false)
     })
   })
 

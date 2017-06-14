@@ -1,11 +1,10 @@
 const expect = require('chai').expect
 
 describe('ConnectThenPing', () => {
-
   const ConnectThenPingStrategy = require('../../../lib/health-strategies/generic')
     .ConnectThenPingStrategy
 
-  const mockAdapter = () =>({
+  const mockAdapter = () => ({
     isConnected: false,
     connect () {
       this.isConnected = true
