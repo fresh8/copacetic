@@ -31,6 +31,6 @@ describe('HealthFactoryProvider', () => {
     const mongoStrategy = HealthFactoryProvider(injector)({ type: 'mongodb' })
 
     expect(mongoStrategy.check).to.be.a('function')
-    expect(mongoStrategy.mongoAdapter.connect).to.be.a('function')
+    expect(mongoStrategy.adapter.connect).to.be.a('function')
   })
 })
