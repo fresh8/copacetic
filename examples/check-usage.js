@@ -15,18 +15,20 @@ copacetic
   .registerDependency({
     name: 'My-Database',
     url: 'mongodb://localhost/some-db',
-    healthStrategy: 'mongodb'
+    strategy: {
+      type: 'mongodb'
+    }
   })
 
-// check the health of all services once
+// Check the health of all services once
 copacetic
   .checkAll()
   .on('health', (healthInfoArr) => {
-    // do something with the result
+    // Do something with the result
     // an array of health info is returned
   })
 
-// check the health of 2 services once
+// Check the health of 2 services once
 copacetic
   .check({
     dependencies: [
@@ -35,15 +37,14 @@ copacetic
     ]
   })
   .on('health', (heathInfoArr) => {
-    // do something
-
+    // Do something ...
   })
 
-// poll every service until their is a hard dependency failure
+// Poll every service until their is a hard dependency failure
 copacetic
   .pollAll({ interval: '1 minute 30 seconds' })
   .on('health', (healthInfoArr) => {
     if (!copacetic.isHealthy) {
-      copacetic.stop()
+      // Handle degraded state ...
     }
   })

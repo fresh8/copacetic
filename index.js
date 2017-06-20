@@ -1,16 +1,20 @@
+const path = require('path')
+
 const dependencyLevel = require('./lib/dependency-level')
-
+const Dependency = require('./lib/dependency')
 const Copacetic = require('./lib/copacetic')
+const HealthFactoryProvider = require('./lib/health-strategies').HealthFactoryProvider
 
-module.exports = name => new Copacetic(name)
+const injector = require('./lib/util').Injector(
+  require('codependency').register(module, {
+    index: ['optionalPeerDependencies', 'devDependencies']
+  })
+)
+
+module.exports = name => Copacetic(Dependency(injector))(name)
 
 module.exports.dependencyLevel = dependencyLevel
 
 module.exports.Middleware = require('./lib/middleware')
 
-module.exports.healthStrategy = Object.freeze({
-  http: require('./lib/health-strategies').HttpStrategy,
-  mongodb: require('./lib/health-strategies').MongodbStrategy
-})
-
-module.exports.healthFactory = require('./lib/health-strategies').healthFactory
+module.exports.HealthStrategy = HealthFactoryProvider(injector)

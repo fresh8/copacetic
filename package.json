@@ -1,13 +1,13 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
     "coverage": "nyc npm test && nyc report --reporter=lcov",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-    "test": "node_modules/.bin/_mocha ./test/**",
-    "lint": "node_modules/.bin/standard \"test/**/*.js\" \"lib/**/*.js\""
+    "test": "mocha --recursive ./test",
+    "lint": "standard \"test/**/*.js\" \"lib/**/*.js\" --fix"
   },
   "engines": {
     "node": ">=6.9.0"
@@ -16,6 +16,7 @@
     "globals": [
       "describe",
       "it",
+      "before",
       "beforeEach"
     ]
   },
@@ -52,17 +53,24 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.13.1",
+    "ioredis": "^3.1.1",
     "mocha": "^3.4.2",
+    "mongodb": "^2.2.28",
     "nock": "^9.0.13",
+    "node-fetch": "^1.7.1",
     "nyc": "^11.0.1",
     "standard": "^10.0.2"
   },
   "dependencies": {
+    "codependency": "^2.0.1",
     "human-interval": "^0.1.6",
     "lodash.isobject": "^3.0.2",
-    "mongodb": "^2.2.27",
     "node-fetch": "^1.7.0",
     "node-noop": "^1.0.0",
     "precond": "^0.2.3"
+  },
+  "optionalPeerDependencies": {
+    "redis": "2.x",
+    "mongodb": "2.x"
   }
 }
