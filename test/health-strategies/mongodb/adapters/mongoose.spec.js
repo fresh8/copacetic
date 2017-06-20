@@ -173,9 +173,6 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
           strategy.adapter.connection.errmsg = 'unreachable'
           return strategy.check()
         })
-        .then(() => {
-          console.log('aye')
-        })
         .catch(() => {
           expect(strategy.adapter.isConnected).to.equal(false)
         })
