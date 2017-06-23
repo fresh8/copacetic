@@ -1,7 +1,13 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "3.1.1",
+  "version": "3.1.0",
   "dependencies": {
+    "@types/node": {
+      "version": "6.0.78",
+      "from": "@types/node@>=6.0.78 <7.0.0",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-6.0.78.tgz",
+      "dev": true
+    },
     "acorn": {
       "version": "5.0.3",
       "from": "acorn@>=5.0.1 <6.0.0",
@@ -256,9 +262,9 @@
       "dev": true
     },
     "commander": {
-      "version": "2.9.0",
+      "version": "2.10.0",
       "from": "commander@>=2.9.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz",
+      "resolved": "https://registry.npmjs.org/commander/-/commander-2.10.0.tgz",
       "dev": true
     },
     "concat-map": {
@@ -499,24 +505,10 @@
       "dev": true
     },
     "eslint-module-utils": {
-      "version": "2.0.0",
+      "version": "2.1.1",
       "from": "eslint-module-utils@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/eslint-module-utils/-/eslint-module-utils-2.0.0.tgz",
-      "dev": true,
-      "dependencies": {
-        "debug": {
-          "version": "2.2.0",
-          "from": "debug@2.2.0",
-          "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz",
-          "dev": true
-        },
-        "ms": {
-          "version": "0.7.1",
-          "from": "ms@0.7.1",
-          "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz",
-          "dev": true
-        }
-      }
+      "resolved": "https://registry.npmjs.org/eslint-module-utils/-/eslint-module-utils-2.1.1.tgz",
+      "dev": true
     },
     "eslint-plugin-import": {
       "version": "2.2.0",
@@ -1186,6 +1178,12 @@
       "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.4.2.tgz",
       "dev": true,
       "dependencies": {
+        "commander": {
+          "version": "2.9.0",
+          "from": "commander@2.9.0",
+          "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz",
+          "dev": true
+        },
         "debug": {
           "version": "2.6.0",
           "from": "debug@2.6.0",
@@ -1219,9 +1217,9 @@
       "dev": true
     },
     "mongoose": {
-      "version": "4.10.7",
+      "version": "4.10.8",
       "from": "mongoose@>=4.0.0 <5.0.0",
-      "resolved": "https://registry.npmjs.org/mongoose/-/mongoose-4.10.7.tgz",
+      "resolved": "https://registry.npmjs.org/mongoose/-/mongoose-4.10.8.tgz",
       "dev": true,
       "dependencies": {
         "mongodb": {
@@ -2880,9 +2878,9 @@
       "dev": true
     },
     "safe-buffer": {
-      "version": "5.0.1",
-      "from": "safe-buffer@>=5.0.1 <5.1.0",
-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz",
+      "version": "5.1.1",
+      "from": "safe-buffer@>=5.1.0 <5.2.0",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.1.tgz",
       "dev": true
     },
     "semver": {
@@ -2947,9 +2945,9 @@
       "dev": true
     },
     "string_decoder": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "string_decoder@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.3.tgz",
       "dev": true
     },
     "string-width": {
