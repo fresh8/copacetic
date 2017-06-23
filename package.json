@@ -1,6 +1,6 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
@@ -51,6 +51,7 @@
   },
   "homepage": "https://github.com/fresh8/copacetic#readme",
   "devDependencies": {
+    "@types/node": "^6.0.78",
     "chai": "^3.5.0",
     "coveralls": "^2.13.1",
     "ioredis": "3.x",
@@ -75,5 +76,6 @@
     "mongodb": "2.x",
     "mongoose": "4.x",
     "ioredis": "3.x"
-  }
+  },
+  "typings": "copacetic.d.ts"
 }

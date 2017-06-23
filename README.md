@@ -14,7 +14,7 @@ Node v6.4.0 and above
 npm install @fresh8/copacetic --save
 ```
 
-#### Quick Start
+#### Quick Start - Javascript
 ```javascript
 const Copacetic = require('@fresh8/copacetic')
 const level = require('@fresh8/copacetic').dependencyLevel
@@ -26,7 +26,7 @@ copacetic.registerDependency({
   name: 'My-Dependency',
   url: 'https://my-Dependency.io',
   // Defaults to SOFT
-  dependency: level.HARD
+  level: level.HARD
 })
 
 
@@ -47,6 +47,29 @@ copacetic
   })
   .on('unhealthy', (Dependency) => {
     // Handle degraded state...
+  })
+```
+
+#### Quick Start - Typescript
+```typescript
+import * as Copacetic from '@fresh8/copacetic'
+
+const copacetic = Copacetic('my-service')
+
+const myDependencyOverHttp : Copacetic.DependencyOptions = {
+  name: 'my-web-service',
+  url: 'http://example.com'
+}
+
+copacetic.registerDependency(myDependencyOverHttp)
+
+instance
+  .check({ name: 'my-web-service' })
+  .on('healthy', (res: Copacetic.Health) => {
+    // do something with your healthy dependency :)
+  })
+  .on('unhealthy', (res: Copacetic.Health) => {
+    // handle degraded state
   })
 ```
 
