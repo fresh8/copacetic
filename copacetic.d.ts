@@ -303,7 +303,7 @@ declare namespace copacetic {
        * '5 seconds', '1m minute 20 seconds' etc.
        */
       timeout: string
-    ) : Promise<boolean|Error>
+    ) : Promise<boolean>
 
     /**
      * Perform any cleanup operation, if needed, when a dependency
@@ -315,14 +315,14 @@ declare namespace copacetic {
      *  .then(() => { ... cleanup went OK })
      *  .then(() => { ... cleanup failed })
      */
-    cleanup (...args: any[]) : Promise<boolean|Error>
+    cleanup (...args: any[]) : Promise<boolean>
   }
 
   /**
    * Some function that returns a promise
    */
   export interface BackOffCallable {
-    () : Promise<boolean|Error>
+    () : Promise<boolean>
   }
 
   /**
@@ -338,7 +338,7 @@ declare namespace copacetic {
     /**
      * execute some function, retrying some set number of times before failing
      */
-    execute (callable: BackOffCallable) : Promise<boolean|Error>
+    execute (callable: BackOffCallable) : Promise<boolean>
   }
 
   /**
