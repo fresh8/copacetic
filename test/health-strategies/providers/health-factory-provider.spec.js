@@ -10,7 +10,8 @@ describe('HealthFactoryProvider', () => {
   const injector = Injector(CodependencyMock({
     'node-fetch': noop,
     'mongodb': noop,
-    'ioredis': noop
+    'ioredis': noop,
+    'sequelize': noop
   }))
 
   it('should export a function', () => {
@@ -40,6 +41,13 @@ describe('HealthFactoryProvider', () => {
 
     expect(mongoStrategy.check).to.be.a('function')
     expect(mongoStrategy.adapter.connect).to.be.a('function')
+  })
+
+  it('should return a postgres strategy', () => {
+    const postgresStrategy = HealthFactoryProvider(injector)({ type: 'postgres' })
+
+    expect(postgresStrategy.check).to.be.a('function')
+    expect(postgresStrategy.adapter.ping).to.be.a('function')
   })
 
   it('should return null if a strategy is not available', () => {

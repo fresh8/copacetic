@@ -61,6 +61,7 @@
     "nock": "^9.0.13",
     "node-fetch": "1.x",
     "nyc": "^11.0.1",
+    "sequelize": "4.x",
     "standard": "^10.0.2"
   },
   "dependencies": {
@@ -75,7 +76,8 @@
     "node-fetch": "1.x",
     "mongodb": "2.x",
     "mongoose": "4.x",
-    "ioredis": "3.x"
+    "ioredis": "3.x",
+    "sequelize": "4.x"
   },
   "typings": "copacetic.d.ts"
 }
