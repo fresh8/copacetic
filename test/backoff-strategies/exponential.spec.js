@@ -3,6 +3,11 @@ const expect = require('chai').expect
 const exponentialBackoff = require('../../lib/backoff-strategies').ExponentialBackoffStrategy
 
 describe('ExponentialBackoffStrategy', () => {
+  let backoff
+
+  beforeEach(() => {
+    backoff = exponentialBackoff({ multiplier: 1 })
+  })
   it('should export a function', () => {
     expect(exponentialBackoff).to.be.a('function')
   })
@@ -24,18 +29,12 @@ describe('ExponentialBackoffStrategy', () => {
   })
 
   describe('execute', () => {
-    let backoff
-
     const mockResolve = () => new Promise((resolve, reject) => {
       setTimeout(() => resolve(true), 1)
     })
 
     const mockReject = () => new Promise((resolve, reject) => {
       setTimeout(() => reject(new Error('failed')), 1)
-    })
-
-    beforeEach(() => {
-      backoff = exponentialBackoff({ multiplier: 1 })
     })
 
     it('should return a promise', () => {
@@ -68,25 +67,22 @@ describe('ExponentialBackoffStrategy', () => {
           expect(counter).to.equal(3)
         })
     })
+  })
 
-    it('should increase backoff time indefinitely if their is no max delay', () => {
-      const _backoff = exponentialBackoff({ multiplier: 1 })
-
-      _backoff
-        .execute({ func: mockReject, retries: 5 })
-        .catch(() => {
-          expect(_backoff.lastDelay).to.equal(0)
-        })
+  describe('scheduleNextTry', () => {
+    it('should not return a value higher than maxDelay', () => {
+      expect(backoff._scheduleNextTry(5, 32)).to.equal(32)
+      expect(backoff._scheduleNextTry(10, 32)).to.equal(32)
     })
 
-    it('should not exceed the maximum delay', () => {
-      const _backoff = exponentialBackoff({ multiplier: 1 })
+    it('should handle negative input', () => {
+      expect(backoff._scheduleNextTry(5, -1)).to.equal(32)
+    })
 
-      _backoff
-        .execute({ func: mockReject, retries: 5, maxDelay: 4 })
-        .catch(() => {
-          expect(_backoff.lastDelay).to.equal(4)
-        })
+    it('should not limit the delay when maxDelay is undefined', () => {
+      expect(backoff._scheduleNextTry(1)).to.equal(2)
+      expect(backoff._scheduleNextTry(2)).to.equal(4)
+      expect(backoff._scheduleNextTry(16)).to.equal(65536)
     })
   })
 })
