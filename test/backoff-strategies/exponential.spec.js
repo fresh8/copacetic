@@ -63,7 +63,7 @@ describe('ExponentialBackoffStrategy', () => {
       })
 
       backoff
-        .execute({ func: _mockReject, failAfter: 3 })
+        .execute({ func: _mockReject, retries: 3 })
         .catch(() => {
           expect(counter).to.equal(3)
         })
@@ -73,7 +73,7 @@ describe('ExponentialBackoffStrategy', () => {
       const _backoff = exponentialBackoff({ multiplier: 1 })
 
       _backoff
-        .execute({ func: mockReject, failAfter: 5 })
+        .execute({ func: mockReject, retries: 5 })
         .catch(() => {
           expect(_backoff.lastDelay).to.equal(0)
         })
@@ -83,7 +83,7 @@ describe('ExponentialBackoffStrategy', () => {
       const _backoff = exponentialBackoff({ multiplier: 1 })
 
       _backoff
-        .execute({ func: mockReject, failAfter: 5, maxDelay: 4 })
+        .execute({ func: mockReject, retries: 5, maxDelay: 4 })
         .catch(() => {
           expect(_backoff.lastDelay).to.equal(4)
         })
