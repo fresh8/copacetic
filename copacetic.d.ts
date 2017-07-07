@@ -86,12 +86,14 @@ interface Copacetic extends NodeJS.EventEmitter {
      * '5 seconds', '1m minute 20 seconds' etc.
      */
     interval?: string,
+
     /**
      * check the health of dependencies in sequence, or parallel
      */
     parallel?: boolean,
+
     /**
-     * schedule the next check as soon as a poll starts, or wait
+     * Schedule the next check as soon as a poll starts, or wait
      */
     schedule?: string
   }): Copacetic,
@@ -111,14 +113,22 @@ interface Copacetic extends NodeJS.EventEmitter {
    */
   poll (options: {
     /**
-     * An explicit set of dependencies to be health checked
+     * The dependencies to be health checked
      */
     dependencies: Array<
       {
-        /** the name used when registering the dependency **/
+        /*
+         * The name used when registering the dependency
+         */
         name: string,
-        /** the number of times to retry a health check, before marking as unhealthy **/
-        retries?: number
+        /*
+         * The number of times to retry a health check, before marking as unhealthy
+         */
+        retries?: number,
+        /*
+         * The maximum interval of time to wait when retrying
+         */
+        maxDelay?: number
       }
     >,
     /**
@@ -127,11 +137,11 @@ interface Copacetic extends NodeJS.EventEmitter {
      */
     interval: string,
     /**
-     * check the health of dependencies in sequence, or parallel
+     * Check the health of dependencies in sequence, or parallel
      */
     parallel?: boolean,
     /**
-     * schedule the next check as soon as a poll starts, or wait
+     * Schedule the next check as soon as a poll starts, or wait
      */
     schedule?: string
   }): Copacetic,
@@ -147,7 +157,12 @@ interface Copacetic extends NodeJS.EventEmitter {
    *
    *  copacetic.checkAll(false)
    */
-  checkAll (parallel: boolean): Copacetic,
+  checkAll (
+    /**
+     * Check the health of dependencies in sequence, or parallel
+     */
+    parallel: boolean
+  ): Copacetic,
 
   /**
    * Checks the health of a single dependency
@@ -157,8 +172,20 @@ interface Copacetic extends NodeJS.EventEmitter {
    *  copacetic.check({ name: 'cache', retries: 2 })
    */
   check(options: {
+    /*
+     *the name used when registering the dependency
+     */
     name: string,
-    retries?: number
+
+    /*
+     * The number of times to retry a health check, before marking as unhealthy
+     */
+    retries?: number,
+
+    /*
+     * The maximum interval of time to wait when retrying
+     */
+    maxDelay?: number
   }): Copacetic
 
   /**
@@ -172,13 +199,92 @@ interface Copacetic extends NodeJS.EventEmitter {
    *    ],
    *    parallel: false
    *  })
+   *  .on('healthy', (health: Copacetic.Health) => { ... })
+   *  .on('unhealthy', (health: Copacetic.Health) => { ... })
    *
    */
   check(options: {
-    dependencies: Array<{ name: string, retries?: number }> ,
-    retries?: number
+    /**
+     * The dependencies to be health checked
+     */
+    dependencies: Array<
+      {
+        /*
+         * The name used when registering the dependency
+         */
+        name: string,
+        /*
+         * The number of times to retry a health check, before marking as unhealthy
+         */
+        retries?: number,
+        /*
+         * The maximum interval of time to wait when retrying
+         */
+        maxDelay?: number
+      }
+    >,
+
+    /**
+     * Check the health of dependencies in sequence, or parallel
+     */
     parallel?: boolean
+  }): Copacetic,
+
+  /**
+   * Waits for a single dependency to become healthy
+   * Example:
+   *
+   *  copacetic.waitFor({ name: 'database' })
+   *  .on('healthy', (health: Copacetic.Health) => { ... })
+   */
+  waitFor(options: {
+    /*
+     *the name used when registering the dependency
+     */
+    name: string,
+
+    /*
+     * The maximum interval of time to wait when retrying
+     */
+    maxDelay?: number
   }): Copacetic
+
+  /**
+   * Waits for a set of dependencies to become healthy
+   * Example:
+   *
+   *  copacetic.waitFor({
+   *    dependencies: [
+   *      { name: 'database', maxDelay: '10 seconds' },
+   *      { name: 'cache' }
+   *    ],
+   *    parallel: false
+   *  })
+   *  .on('healthy', (health: Copacetic.Health) => { ... })
+   *
+   */
+  waitFor(options: {
+    /**
+     * The dependencies to be health checked
+     */
+    dependencies: Array<
+      {
+        /*
+         * The name used when registering the dependency
+         */
+        name: string,
+        /*
+         * The maximum interval of time to wait when retrying
+         */
+        maxDelay?: number
+      }
+    >,
+
+    /**
+     * Check the health of dependencies in sequence, or parallel
+     */
+    parallel?: boolean
+  }): Copacetic,
 }
 
 
@@ -246,7 +352,12 @@ declare namespace copacetic {
        * The number of times a dependency's health will be checked
        * before giving up
        */
-      retries?: number
+      retries?: number,
+
+      /*
+       * The maximum interval of time to wait when retrying
+       */
+      maxDelay?: number
     ): Promise<Health>,
   }
 
@@ -258,14 +369,17 @@ declare namespace copacetic {
      * The name of the dependency that this health report belongs to
      */
     name: string,
+
     /**
      * Whether the dependency passed a health check
      */
     healthy: boolean,
+
     /**
      * The relationship between a service and dependency
      */
     level: dependencyLevel,
+
     /**
      * The last time the dependency was health checked
      */
@@ -298,6 +412,7 @@ declare namespace copacetic {
        * The resource accessed when checking the health of a dependency
        */
       url: string,
+
       /**
        * How long to wait until giving up. of the format
        * '5 seconds', '1m minute 20 seconds' etc.
@@ -331,8 +446,14 @@ declare namespace copacetic {
    */
   export interface BackoffStrategy {
     new(
-      /** the number of times execute will try the callable before giving up **/
-      maxRetries: number
+      /*
+       * The number of times execute will try the callable before giving up
+       */
+      maxRetries: number,
+      /*
+       * The maximum interval of time to wait when retrying
+       */
+      maxDelay?: number
     ) : BackoffStrategy
 
     /**
@@ -350,11 +471,13 @@ declare namespace copacetic {
      * The type of health strategy to use, i.e. http, mongodb, redis
      */
     type: string,
+
     /**
      * The configuration options for the type of strategy you want to use
      * i.e. timeout
      */
     opts?: object,
+
     /**
      * A custom adapter to use for a health strategy, i.e. you may want to use some
      * library/database driver copacetic doesn't support out of the box
@@ -370,14 +493,17 @@ declare namespace copacetic {
      * Configuration options for a health strategy
      */
     strategy?: HealthStrategyOptions,
+
     /**
      * The relationship between a service and dependency
      */
     level?: dependencyLevel,
+
     /**
      * The identifier used for a dependency
      */
     name: string,
+
     /**
      * The resource accessed when checking the health of a dependency
      */
@@ -392,23 +518,28 @@ declare namespace copacetic {
      * The instance of copacetic that will serve health information
      */
     copacetic: Copacetic,
+
     /**
      * The rate at which dependencies will be polled, of the format
      * '5 seconds', '1m minute 20 seconds' etc.
      */
     interval?: string,
+
     /**
-     * An explicit set of dependencies to be health checked
+     * The dependencies to be health checked
      */
     dependencies?: Array<copacetic.Dependency>,
+
     /**
      * check the health of dependencies in sequence, or parallel
      */
     parallel?: boolean,
+
     /**
      * schedule the next check as soon as a poll starts, or wait
      */
     schedule?: string,
+
     /**
      * When true the middleware will output all health information
      * for the registered dependencies. If not verbose, only a status code
@@ -421,18 +552,23 @@ declare namespace copacetic {
    * Describes the relationship between your service and a dependency
    */
   export enum dependencyLevel {
-    /** your service cannot function when a hard dependency is unavailable **/
+    /**
+     * Your service cannot function when a hard dependency is unavailable
+     */
     HARD,
-    /** your service can still run, even if this dependency is unavailable **/
+
+    /*
+     * Your service can still run, even if this dependency is unavailable
+     */
     SOFT
   }
   /**
-   * express middleware for a copacetic instance
+   * Express middleware for a copacetic instance
    */
   export function Middleware(options: MiddlewareOptions): Function
 
   /**
-   * factory function for providing different health strategies
+   * Factory function for providing different health strategies
    */
   export function HealthStrategy(options: HealthStrategyOptions): Function
 }

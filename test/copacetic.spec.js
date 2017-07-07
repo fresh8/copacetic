@@ -1,6 +1,8 @@
 describe('Copacetic', () => {
   const expect = require('chai').expect
+  const sinon = require('sinon')
   const nock = require('nock')
+  const noop = require('node-noop').noop
 
   let Copacetic
   let dependencyLevel
@@ -313,6 +315,31 @@ describe('Copacetic', () => {
               }
             ])
           })
+      })
+    })
+  })
+
+  describe('waitFor', () => {
+    it('should call check with unlimited retries', () => {
+      const copacetic = Copacetic()
+      copacetic.registerDependency({
+        name: 'My-Dependency',
+        url: 'http://example.com'
+      })
+
+      const checkSpy = sinon.stub(copacetic, 'check').callsFake(noop)
+
+      copacetic.waitFor({ name: 'My-Dependency' })
+      copacetic.waitFor({
+        dependencies: [ { name: 'My-Dependency' } ]
+      })
+
+      expect(checkSpy.getCall(0).args[0]).to.deep.equal({
+        name: 'My-Dependency', retries: 0
+      })
+
+      expect(checkSpy.getCall(1).args[0]).to.deep.equal({
+        dependencies: [ { name: 'My-Dependency', retries: 0, maxDelay: 0 } ]
       })
     })
   })
