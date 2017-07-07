@@ -24,30 +24,69 @@ describe('ExponentialBackoffStrategy', () => {
   })
 
   describe('execute', () => {
-    const backoff = exponentialBackoff({ multiplier: 100 })
+    let backoff
 
     const mockResolve = () => new Promise((resolve, reject) => {
-      setTimeout(() => resolve(true), 100)
+      setTimeout(() => resolve(true), 1)
     })
 
     const mockReject = () => new Promise((resolve, reject) => {
-      setTimeout(() => reject(new Error()), 100)
+      setTimeout(() => reject(new Error('failed')), 1)
+    })
+
+    beforeEach(() => {
+      backoff = exponentialBackoff({ multiplier: 1 })
     })
 
     it('should return a promise', () => {
-      expect(backoff.execute(mockResolve).then).to.be.a('function')
+      expect(backoff.execute({ func: mockResolve }).then).to.be.a('function')
     })
 
     it('should resolve', () => {
       backoff
-        .execute(mockResolve)
+        .execute({ func: mockResolve })
         .then(r => expect(r).to.equal(true))
     })
 
     it('should reject', () => {
       backoff
-        .execute(mockReject)
-        .catch(r => expect(r).to.equal(Error))
+        .execute({ func: mockReject })
+        .catch(err => expect(err.message).to.equal('failed'))
+    })
+
+    it('should backoff 3 times', () => {
+      let counter = 0
+
+      const _mockReject = () => new Promise((resolve, reject) => {
+        counter += 1
+        setTimeout(() => reject(new Error('failed')), 1)
+      })
+
+      backoff
+        .execute({ func: _mockReject, failAfter: 3 })
+        .catch(() => {
+          expect(counter).to.equal(3)
+        })
+    })
+
+    it('should increase backoff time indefinitely if their is no max delay', () => {
+      const _backoff = exponentialBackoff({ multiplier: 1 })
+
+      _backoff
+        .execute({ func: mockReject, failAfter: 5 })
+        .catch(() => {
+          expect(_backoff.lastDelay).to.equal(0)
+        })
+    })
+
+    it('should not exceed the maximum delay', () => {
+      const _backoff = exponentialBackoff({ multiplier: 1 })
+
+      _backoff
+        .execute({ func: mockReject, failAfter: 5, maxDelay: 4 })
+        .catch(() => {
+          expect(_backoff.lastDelay).to.equal(4)
+        })
     })
   })
 })
