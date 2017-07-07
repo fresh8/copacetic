@@ -199,6 +199,8 @@ interface Copacetic extends NodeJS.EventEmitter {
    *    ],
    *    parallel: false
    *  })
+   *  .on('healthy', (health: Copacetic.Health) => { ... })
+   *  .on('unhealthy', (health: Copacetic.Health) => { ... })
    *
    */
   check(options: {
@@ -222,16 +224,67 @@ interface Copacetic extends NodeJS.EventEmitter {
       }
     >,
 
-    /*
-     * The number of times to retry a health check, before marking as unhealthy
+    /**
+     * Check the health of dependencies in sequence, or parallel
      */
-    retries?: number
+    parallel?: boolean
+  }): Copacetic,
+
+  /**
+   * Waits for a single dependency to become healthy
+   * Example:
+   *
+   *  copacetic.waitFor({ name: 'database' })
+   *  .on('healthy', (health: Copacetic.Health) => { ... })
+   */
+  waitFor(options: {
+    /*
+     *the name used when registering the dependency
+     */
+    name: string,
+
+    /*
+     * The maximum interval of time to wait when retrying
+     */
+    maxDelay?: number
+  }): Copacetic
+
+  /**
+   * Waits for a set of dependencies to become healthy
+   * Example:
+   *
+   *  copacetic.waitFor({
+   *    dependencies: [
+   *      { name: 'database', maxDelay: '10 seconds' },
+   *      { name: 'cache' }
+   *    ],
+   *    parallel: false
+   *  })
+   *  .on('healthy', (health: Copacetic.Health) => { ... })
+   *
+   */
+  waitFor(options: {
+    /**
+     * The dependencies to be health checked
+     */
+    dependencies: Array<
+      {
+        /*
+         * The name used when registering the dependency
+         */
+        name: string,
+        /*
+         * The maximum interval of time to wait when retrying
+         */
+        maxDelay?: number
+      }
+    >,
 
     /**
      * Check the health of dependencies in sequence, or parallel
      */
     parallel?: boolean
-  }): Copacetic
+  }): Copacetic,
 }
 
 
