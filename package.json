@@ -67,6 +67,7 @@
   "dependencies": {
     "codependency": "^2.0.1",
     "human-interval": "^0.1.6",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.isobject": "^3.0.2",
     "node-fetch": "^1.7.0",
     "node-noop": "^1.0.0",
