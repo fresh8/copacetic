@@ -23,6 +23,14 @@ interface Copacetic extends NodeJS.EventEmitter {
   isHealthy: boolean,
 
   /**
+   * When true, 'check' and 'waitFor' will return an instance
+   * of Copacetic, if false a promise will be returned. It should
+   * be noted that polling is unaffected by this field, and will
+   * always return the Copacetic instance in use.
+   */
+  eventEmitterMode: boolean,
+
+  /**
    * Health information on all registered services
    */
   healthInfo: Array<copacetic.Health>,
@@ -99,6 +107,39 @@ interface Copacetic extends NodeJS.EventEmitter {
   }): Copacetic,
 
   /**
+   * Polls the health of a single dependency
+   * Example:
+   *
+   *  copacetic.poll({
+   *    name: 'database',
+   *    interval: '1 minute 30 seconds',
+   *    parallel: false
+   *  })
+   */
+  poll (options: {
+    /*
+     * The name used when registering the dependency
+     */
+    name: string,
+
+    /**
+     * The rate at which dependencies will be polled, of the format
+     * '5 seconds', '1m minute 20 seconds' etc.
+     */
+    interval?: string,
+
+    /**
+     * Check the health of dependencies in sequence, or parallel
+     */
+    parallel?: boolean,
+
+    /**
+     * Schedule the next check as soon as a poll starts, or wait
+     */
+    schedule?: string
+  }): Copacetic,
+
+  /**
    * Polls the health of a set of dependencies
    * Example:
    *
@@ -135,7 +176,7 @@ interface Copacetic extends NodeJS.EventEmitter {
      * The rate at which dependencies will be polled, of the format
      * '5 seconds', '1m minute 20 seconds' etc.
      */
-    interval: string,
+    interval?: string,
     /**
      * Check the health of dependencies in sequence, or parallel
      */
@@ -145,6 +186,7 @@ interface Copacetic extends NodeJS.EventEmitter {
      */
     schedule?: string
   }): Copacetic,
+
 
   /**
    * stops polling dependencies
@@ -162,18 +204,22 @@ interface Copacetic extends NodeJS.EventEmitter {
      * Check the health of dependencies in sequence, or parallel
      */
     parallel: boolean
-  ): Copacetic,
+  ): Copacetic | Promise<Array<copacetic.Health>>,
 
   /**
    * Checks the health of a single dependency
    * Example:
+   *  // when in event emitter mode
+   *  copacetic.check({ name: 'database' }).on('healthy', () => {})
+   *  copacetic.check({ name: 'cache', retries: 2 }).on('healthy', () => {})
    *
-   *  copacetic.check({ name: 'database' })
-   *  copacetic.check({ name: 'cache', retries: 2 })
+   *  // when in promise mode
+   *  copacetic.check<Promise<Copacetic.Health>>({ name: 'database' })
+   *  .then((res) => { ... })
    */
-  check(options: {
-    /*
-     *the name used when registering the dependency
+  check<R = Copacetic> (options: {
+    /*s
+     * The name used when registering the dependency
      */
     name: string,
 
@@ -186,12 +232,12 @@ interface Copacetic extends NodeJS.EventEmitter {
      * The maximum interval of time to wait when retrying
      */
     maxDelay?: number
-  }): Copacetic
+  }): R,
 
   /**
    * Checks the health of a set of dependencies
    * Example:
-   *
+   *  // when in event emitter mode
    *  copacetic.check({
    *    dependencies: [
    *      { name: 'database', retries: 2 },
@@ -202,8 +248,12 @@ interface Copacetic extends NodeJS.EventEmitter {
    *  .on('healthy', (health: Copacetic.Health) => { ... })
    *  .on('unhealthy', (health: Copacetic.Health) => { ... })
    *
+   *  // when in promise mode
+   *  copacetic.check<Promise<Array<Copacetic.Health>>>({ dependencies })
+   *  .then((res) => { ... })
+   *
    */
-  check(options: {
+  check<R = Copacetic> (options: {
     /**
      * The dependencies to be health checked
      */
@@ -228,16 +278,20 @@ interface Copacetic extends NodeJS.EventEmitter {
      * Check the health of dependencies in sequence, or parallel
      */
     parallel?: boolean
-  }): Copacetic,
+  }): R,
 
   /**
    * Waits for a single dependency to become healthy
    * Example:
-   *
+   *  // when in event emitter mode
    *  copacetic.waitFor({ name: 'database' })
    *  .on('healthy', (health: Copacetic.Health) => { ... })
+   *
+   *  // when in promise mode
+   *  copacetic.waitFor<Copacetic.Health>({ name: 'database' })
+   *  .then((res) => { ... })
    */
-  waitFor(options: {
+  waitFor<R = Copacetic> (options: {
     /*
      *the name used when registering the dependency
      */
@@ -247,12 +301,12 @@ interface Copacetic extends NodeJS.EventEmitter {
      * The maximum interval of time to wait when retrying
      */
     maxDelay?: number
-  }): Copacetic
+  }): R
 
   /**
    * Waits for a set of dependencies to become healthy
    * Example:
-   *
+   *  // when in event emitter mode
    *  copacetic.waitFor({
    *    dependencies: [
    *      { name: 'database', maxDelay: '10 seconds' },
@@ -262,8 +316,13 @@ interface Copacetic extends NodeJS.EventEmitter {
    *  })
    *  .on('healthy', (health: Copacetic.Health) => { ... })
    *
+   *  // when in promise mode
+   *  copacetic.waitFor<Array<Copacetic.Health>>({
+   *    dependencies: []
+   *  }).then((res) => { ... })
+   *
    */
-  waitFor(options: {
+  waitFor<R = Copacetic> (options: {
     /**
      * The dependencies to be health checked
      */
@@ -284,16 +343,50 @@ interface Copacetic extends NodeJS.EventEmitter {
      * Check the health of dependencies in sequence, or parallel
      */
     parallel?: boolean
-  }): Copacetic,
+  }): R,
+
+  /**
+   * Register an event listener for the 'health' event. Used when checking
+   * the health of a single dependency, i.e. copacetic.check({ name: '' })
+   */
+  on (
+    event: 'health',
+    listener: (payload: Array<copacetic.Health>, stop: Function)
+  ): Copacetic,
+
+  /**
+   * Register an event listener for 'healthy' event. used when checking
+   * the health of multiple dependencies, i.e. copacetic.check({ dependencies })
+   */
+  on (
+    event: 'healthy',
+    listener: (payload: copacetic.Health , stop: Function)
+  ): Copacetic,
+
+  /**
+   * Register an event listener for 'unhealthy' event. used when checking
+   * the health of multiple dependencies, i.e. copacetic.check({ dependencies })
+   */
+  on (
+    event: 'unhealthy',
+    listener: (payload: copacetic.Health, stop: Function)
+  ): Copacetic,
 }
 
 
-declare function copacetic(
+declare function copacetic (
   /**
    * The name of your service. This is output in the express
    * middleware when verbose is true
    */
   name?: string,
+  /**
+   * By default when using check/checkAll/waitFor events are emitted.
+   * If eventEmitterMode is set to false then promises will be returned
+   * instead. poll/pollAll remain unaffected by this, and will always
+   * return an event emitter.
+   */
+  eventEmitterMode?: boolean
 ): Copacetic
 
 declare namespace copacetic {
