@@ -11,7 +11,7 @@ const injector = require('./lib/util').Injector(
   })
 )
 
-module.exports = name => Copacetic(Dependency(injector))(name)
+module.exports = (name, mode) => Copacetic(Dependency(injector))(name, mode)
 
 module.exports.dependencyLevel = dependencyLevel
 

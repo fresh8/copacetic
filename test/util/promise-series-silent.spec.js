@@ -5,19 +5,15 @@ const promiseSeriesSilent = require('../../lib/util').promiseSeriesSilent
 describe('promiseSeriesSilent', () => {
   let counter = 0
 
-  beforeEach(() => {
-    counter = 0
-  })
-
   /* eslint-disable no-plusplus */
   const a = new Promise((resolve, reject) => {
-    setTimeout(() => resolve(counter++), 100)
+    setTimeout(() => resolve(++counter), 100)
   })
   const b = new Promise((resolve, reject) => {
-    setTimeout(() => resolve(counter++), 200)
+    setTimeout(() => resolve(++counter), 200)
   })
   const c = new Promise((resolve, reject) => {
-    setTimeout(() => resolve(counter++), 300)
+    setTimeout(() => resolve(++counter), 300)
   })
   const d = new Promise((resolve, reject, rej) => {
     setTimeout(() => reject(new Error()), 50)
@@ -29,7 +25,7 @@ describe('promiseSeriesSilent', () => {
   })
 
   it('should call a set of promises in series', () => {
-    promiseSeriesSilent([a, c, b])
+    return promiseSeriesSilent([a, c, b])
       .then((res) => {
         expect(res[0]).to.equal(1)
         expect(res[1]).to.equal(3)
@@ -38,10 +34,10 @@ describe('promiseSeriesSilent', () => {
   })
 
   it('should handle rejections gracefully', () => {
-    promiseSeriesSilent([a, d, b, c])
+    return promiseSeriesSilent([a, d, b, c])
       .then((res) => {
         expect(res[0]).to.equal(1)
-        expect(res[1]).to.equal(Error)
+        expect(res[1]).to.be.a('error')
         expect(res[2]).to.equal(2)
         expect(res[3]).to.equal(3)
       })

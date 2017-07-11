@@ -43,7 +43,6 @@ describe('StrategyFactoryProvider', () => {
   })
 
   it('should create a new strategy', () => {
-    console.log(injector)
     const StrategyFactory = StrategyFactoryProvider(NotAStrategyFactory, AdapterFactory)(injector)
 
     const strategy = StrategyFactory()

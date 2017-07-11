@@ -1,6 +1,6 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
@@ -62,11 +62,13 @@
     "node-fetch": "1.x",
     "nyc": "^11.0.1",
     "sequelize": "4.x",
+    "sinon": "^2.3.6",
     "standard": "^10.0.2"
   },
   "dependencies": {
     "codependency": "^2.0.1",
     "human-interval": "^0.1.6",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.isobject": "^3.0.2",
     "node-fetch": "^1.7.0",
     "node-noop": "^1.0.0",

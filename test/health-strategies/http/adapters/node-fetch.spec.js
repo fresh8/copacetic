@@ -24,7 +24,7 @@ describe('HttpStrategy - using the node-fetch adapter', () => {
         .get('/')
         .reply(200)
 
-    HttpStrategy()
+    return HttpStrategy()
       .check('http://example.com')
       .then((r) => {
         expect(r.status).to.equal(200)
@@ -36,7 +36,7 @@ describe('HttpStrategy - using the node-fetch adapter', () => {
         .get('/')
         .reply(400)
 
-    HttpStrategy()
+    return HttpStrategy()
       .check('http://example.com')
       .catch((r) => {
         expect(r.status).to.equal(400)
