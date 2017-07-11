@@ -42,13 +42,13 @@ describe('ExponentialBackoffStrategy', () => {
     })
 
     it('should resolve', () => {
-      backoff
+      return backoff
         .execute({ func: mockResolve })
         .then(r => expect(r).to.equal(true))
     })
 
     it('should reject', () => {
-      backoff
+      return backoff
         .execute({ func: mockReject })
         .catch(err => expect(err.message).to.equal('failed'))
     })
@@ -61,7 +61,7 @@ describe('ExponentialBackoffStrategy', () => {
         setTimeout(() => reject(new Error('failed')), 1)
       })
 
-      backoff
+      return backoff
         .execute({ func: _mockReject, retries: 3 })
         .catch(() => {
           expect(counter).to.equal(3)

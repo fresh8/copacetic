@@ -51,7 +51,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
   it('should cleanup the connection', () => {
     const strategy = provideRedisStrategy(true)()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then(() => {
         expect(strategy.adapter.isConnected).to.equal(true)
@@ -68,7 +68,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
     const strategy = provideRedisStrategy(true)()
 
     // It should connect to redis first
-    strategy
+    return strategy
       .check('some-fake-url')
       .then((res) => {
         expect(res).to.equal(true)
@@ -84,7 +84,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
   it('should return an error when mongo is unhealthy', () => {
     const strategy = provideRedisStrategy(false, 'unreachable')()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .catch((err) => {
         expect(err.message).to.equal('unreachable')
@@ -94,7 +94,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
   it('should handle becoming healthy --> unhealthy', () => {
     const strategy = provideRedisStrategy(true)()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then((res) => {
         expect(res).to.equal(true)
@@ -112,7 +112,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
   it('should handle becoming unhealthy --> healthy', () => {
     const strategy = provideRedisStrategy(false, 'unreachable')()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .catch((err) => {
         expect(err.message).to.equal('unreachable')
@@ -128,7 +128,7 @@ describe('RedisStrategy - using the ioredis adapter', () => {
   it('should handle a connection closing', () => {
     const strategy = provideRedisStrategy(true)()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then((res) => {
         expect(res).to.equal(true)

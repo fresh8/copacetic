@@ -33,7 +33,7 @@ describe('Copacetic', () => {
   })
 
   describe('isCopacetic', () => {
-    it('should return true if a hard dependency is unhealthy', () => {
+    it('should return false if a hard dependency is unhealthy', () => {
       const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
@@ -45,14 +45,14 @@ describe('Copacetic', () => {
           .get('/')
           .reply(400)
 
-      copacetic
+      return copacetic
         .check({ name: 'My-Dependency' })
-        .on('unhealthy', () => {
-          expect(copacetic.isCopaceticy).to.equal(true)
+        .on('unhealthy', (healthInfo) => {
+          expect(copacetic.isHealthy).to.equal(false)
         })
     })
 
-    it('should return false if a soft dependency is unhealthy', () => {
+    it('should return true if a soft dependency is unhealthy', () => {
       const copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
@@ -64,10 +64,10 @@ describe('Copacetic', () => {
           .get('/')
           .reply(400)
 
-      copacetic
+      return copacetic
         .check({ name: 'My-Dependency' })
         .on('unhealthy', () => {
-          expect(copacetic.hasHardDependencyFailure).to.equal(false)
+          expect(copacetic.isHealthy).to.equal(true)
         })
     })
 
@@ -83,10 +83,10 @@ describe('Copacetic', () => {
           .get('/')
           .reply(200)
 
-      copacetic
+      return copacetic
         .check({ name: 'My-Dependency' })
         .on('healthy', () => {
-          expect(copacetic.hasHardDependencyFailure).to.equal(false)
+          expect(copacetic.isHealthy).to.equal(false)
         })
     })
   })
@@ -217,19 +217,19 @@ describe('Copacetic', () => {
     it('should check the health of all registered dependencies', () => {
       copacetic
         .checkAll()
-        .on('healthy', (dependency) => {
-          expect(dependency).to.deep.equal([
+        .on('healthy', (dependencies) => {
+          expect(dependencies).to.deep.equal([
             {
               name: 'My-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependency.lastChecked
+              lastChecked: dependencies[0].lastChecked
             },
             {
               name: 'My-Other-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependency.lastChecked
+              lastChecked: dependencies[1].lastChecked
             }
           ])
         })
@@ -237,21 +237,21 @@ describe('Copacetic', () => {
 
     it('should return a promise when not in eventEmitterMode', () => {
       copacetic.eventEmitterMode = false
-      copacetic
+      return copacetic
         .checkAll()
-        .then((dependency) => {
-          expect(dependency).to.deep.equal([
+        .then((dependencies) => {
+          expect(dependencies).to.deep.equal([
             {
               name: 'My-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependency.lastChecked
+              lastChecked: dependencies[0].lastChecked
             },
             {
               name: 'My-Other-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependency.lastChecked
+              lastChecked: dependencies[1].lastChecked
             }
           ])
         })
@@ -308,12 +308,12 @@ describe('Copacetic', () => {
 
         copacetic.eventEmitterMode = false
 
-        copacetic
+        return copacetic
           .check({ name: 'My-Dependency' })
           .then((dependency) => {
             expect(dependency).to.deep.equal({
               name: 'My-Dependency',
-              healthy: false,
+              healthy: true,
               level: 'SOFT',
               lastChecked: dependency.lastChecked
             })
@@ -449,14 +449,14 @@ describe('Copacetic', () => {
           .get('/')
           .reply(200)
 
-      copacetic
+      return copacetic
         .poll({ name: 'My-Dependency' })
         .on('health', (healthSummary, stop) => {
           expect(healthSummary).to.deep.equal({
             name: 'My-Dependency',
             healthy: true,
             level: 'SOFT',
-            lastChecked: healthSummary[0].lastChecked
+            lastChecked: healthSummary.lastChecked
           })
 
           stop()
