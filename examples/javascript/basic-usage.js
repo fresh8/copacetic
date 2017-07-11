@@ -43,8 +43,25 @@ copacetic
 // Poll every service until their is a hard dependency failure
 copacetic
   .pollAll({ interval: '1 minute 30 seconds' })
-  .on('health', (healthInfoArr) => {
+  .on('health', (healthInfoArr, stop) => {
     if (!copacetic.isHealthy) {
       // Handle degraded state ...
+      stop()
+    }
+  })
+
+// Poll 'My-Http-Service' service until their is a hard dependency failure
+// you probably wouldn't do this, but as an example of using stop...
+copacetic
+  .poll({
+    interval: '1 minute 30 seconds',
+    services: [
+      { name: 'My-Http-Service' }
+    ]
+  })
+  .on('health', (healthInfoArr, stop) => {
+    if (!copacetic.isHealthy) {
+      // Handle degraded state ...
+      stop()
     }
   })

@@ -345,14 +345,16 @@ interface Copacetic extends NodeJS.EventEmitter {
     parallel?: boolean
   }): R,
 
+  on(event: string | symbol, listener: Function): this,
+
   /**
    * Register an event listener for the 'health' event. Used when checking
    * the health of a single dependency, i.e. copacetic.check({ name: '' })
    */
   on (
     event: 'health',
-    listener: (payload: Array<copacetic.Health>, stop: Function)
-  ): Copacetic,
+    listener: (payload: Array<copacetic.Health>, stop: Function) => void
+  ): this,
 
   /**
    * Register an event listener for 'healthy' event. used when checking
@@ -360,8 +362,8 @@ interface Copacetic extends NodeJS.EventEmitter {
    */
   on (
     event: 'healthy',
-    listener: (payload: copacetic.Health , stop: Function)
-  ): Copacetic,
+    listener: (payload: copacetic.Health , stop: Function) => void
+  ): this,
 
   /**
    * Register an event listener for 'unhealthy' event. used when checking
@@ -369,8 +371,8 @@ interface Copacetic extends NodeJS.EventEmitter {
    */
   on (
     event: 'unhealthy',
-    listener: (payload: copacetic.Health, stop: Function)
-  ): Copacetic,
+    listener: (payload: copacetic.Health, stop: Function) => void
+  ): this,
 }
 
 
@@ -563,7 +565,7 @@ declare namespace copacetic {
     /**
      * The type of health strategy to use, i.e. http, mongodb, redis
      */
-    type: string,
+    type: 'http' | 'mongodb' | 'redis' | 'postgres',
 
     /**
      * The configuration options for the type of strategy you want to use
