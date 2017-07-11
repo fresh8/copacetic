@@ -62,33 +62,35 @@ describe('Dependency', () => {
       expect(dependency.check().then).to.be.a('function')
     })
 
-    it('should use a HttpStrategy to check a dependency\'s health', () => {
+    it('should return health info when healthy', () => {
       nock('http://example.com')
           .get('/')
           .reply(200)
 
-      dependency
+      return dependency
         .check()
-        .catch((r) => {
+        .then((r) => {
           expect({
             name: 'test-dependency',
             healthy: true,
-            dependency: 'SOFT',
+            level: 'SOFT',
             lastChecked: r.lastChecked
           }).to.deep.equal(r)
         })
+    })
 
+    it('should return health info when unhealthy', () => {
       nock('http://example.com')
           .get('/')
-          .reply(400)
+          .reply(404)
 
-      dependency
-        .check()
+      return dependency
+        .check(1, 500)
         .catch((r) => {
           expect({
             name: 'test-dependency',
             healthy: false,
-            dependency: 'SOFT',
+            level: 'SOFT',
             lastChecked: r.lastChecked
           }).to.deep.equal(r)
         })
@@ -99,13 +101,13 @@ describe('Dependency', () => {
           .get('/')
           .reply(400)
 
-      dependency
-        .check(2)
+      return dependency
+        .check(2, 100)
         .catch((r) => {
           expect({
             name: 'test-dependency',
-            healthy: true,
-            dependency: 'SOFT',
+            healthy: false,
+            level: 'SOFT',
             lastChecked: r.lastChecked
           }).to.deep.equal(r)
         })

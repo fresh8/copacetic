@@ -4,10 +4,10 @@ const promiseAllSilent = require('../../lib/util').promiseAllSilent
 
 describe('promiseAllSilent', () => {
   const a = new Promise((resolve, reject) => {
-    setTimeout(() => resolve({ success: true }), 300)
+    setTimeout(() => resolve({ success: true }), 10)
   })
   const b = new Promise((resolve, reject) => {
-    setTimeout(() => reject(new Error()), 50)
+    setTimeout(() => reject(new Error()), 10)
   })
 
   it('should export a function', () => {
@@ -15,10 +15,10 @@ describe('promiseAllSilent', () => {
   })
 
   it('should handle rejection', () => {
-    promiseAllSilent([a, b])
+    return promiseAllSilent([a, b])
       .then((res) => {
         expect(res[0].success).to.equal(true)
-        expect(res[1].success).to.equal(Error)
+        expect(res[1]).to.be.a('error')
       })
   })
 })

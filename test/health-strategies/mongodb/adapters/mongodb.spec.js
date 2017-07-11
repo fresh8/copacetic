@@ -81,7 +81,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
   it('should cleanup', () => {
     const strategy = MongodbStrategy()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then(() => {
         strategy.cleanup()
@@ -93,26 +93,24 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
   it('should return true when mongo is healthy', () => {
     const strategy = MongodbStrategy()
 
-    strategy
+    return strategy
       .check('some-fake-url')
+      .then((res) => {
+        expect(res).to.equal(true)
+
+        return strategy.check('some-fake-url')
+      })
       .then((res) => {
         expect(res).to.equal(true)
       })
       .catch(e => e)
-
-    strategy
-        .check('some-fake-url')
-        .then((res) => {
-          expect(res).to.equal(true)
-        })
-        .catch(e => e)
   })
 
   it('should return an error when mongo is unhealthy', () => {
     mockMongodbClient.MongoClient.shouldAccept = false
     mockMongodbClient.MongoClient.err = 'Something went wrong!'
 
-    MongodbStrategy()
+    return MongodbStrategy()
       .check('some-fake-url')
       .catch((err) => {
         expect(err).to.equal('Something went wrong!')
@@ -124,7 +122,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
 
     const strategy = MongodbStrategy()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then((res) => {
         expect(res).to.equal(true)
@@ -144,7 +142,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
 
     const strategy = MongodbStrategy()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .catch((err) => {
         expect(err).to.equal('Something went wrong!')
@@ -162,7 +160,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
   it('should handle a connection closing', () => {
     const strategy = MongodbStrategy()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then((res) => {
         expect(res).to.equal(true)

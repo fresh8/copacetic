@@ -53,7 +53,7 @@ describe('Postgres strategy - using the sequelize adapter', () => {
   it('should cleanup connection', () => {
     const strategy = providePostgresStrategy()()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .then(() => {
         expect(strategy.adapter.isConnected).to.equal(true)
@@ -68,7 +68,7 @@ describe('Postgres strategy - using the sequelize adapter', () => {
   it('should return true when postgres is healthy', () => {
     const strategy = providePostgresStrategy()()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       // create the connection
       .then((res) => {
@@ -85,7 +85,7 @@ describe('Postgres strategy - using the sequelize adapter', () => {
   it('should return an error when postgres is unhealthy', () => {
     const strategy = providePostgresStrategy('unreachable')()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .catch((err) => {
         expect(err.message).to.equal('unreachable')
