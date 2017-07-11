@@ -28,6 +28,10 @@ describe('Copacetic', () => {
     expect(Copacetic()).to.be.a('object')
   })
 
+  it('should be in event emitter mode by default', () => {
+    expect(Copacetic().eventEmitterMode).to.equal(true)
+  })
+
   describe('isCopacetic', () => {
     it('should return true if a hard dependency is unhealthy', () => {
       const copacetic = Copacetic()
@@ -189,8 +193,10 @@ describe('Copacetic', () => {
   })
 
   describe('checkAll()', () => {
-    it('should check the health of all registered dependencies', () => {
-      const copacetic = Copacetic()
+    let copacetic
+
+    beforeEach(() => {
+      copacetic = Copacetic()
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
@@ -206,22 +212,46 @@ describe('Copacetic', () => {
       nock('http://other-example.com')
           .get('/')
           .reply(200)
+    })
 
+    it('should check the health of all registered dependencies', () => {
       copacetic
         .checkAll()
-        .on('healthy', (dependencyCopacetic) => {
-          expect(dependencyCopacetic).to.deep.equal([
+        .on('healthy', (dependency) => {
+          expect(dependency).to.deep.equal([
             {
               name: 'My-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependencyCopacetic.lastChecked
+              lastChecked: dependency.lastChecked
             },
             {
               name: 'My-Other-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependencyCopacetic.lastChecked
+              lastChecked: dependency.lastChecked
+            }
+          ])
+        })
+    })
+
+    it('should return a promise when not in eventEmitterMode', () => {
+      copacetic.eventEmitterMode = false
+      copacetic
+        .checkAll()
+        .then((dependency) => {
+          expect(dependency).to.deep.equal([
+            {
+              name: 'My-Dependency',
+              healthy: true,
+              level: 'SOFT',
+              lastChecked: dependency.lastChecked
+            },
+            {
+              name: 'My-Other-Dependency',
+              healthy: true,
+              level: 'SOFT',
+              lastChecked: dependency.lastChecked
             }
           ])
         })
@@ -245,12 +275,12 @@ describe('Copacetic', () => {
 
         copacetic
           .check({ name: 'My-Dependency' })
-          .on('healthy', (dependencyCopacetic) => {
-            expect(dependencyCopacetic).to.deep.equal({
+          .on('healthy', (dependency) => {
+            expect(dependency).to.deep.equal({
               name: 'My-Dependency',
               healthy: true,
               level: 'SOFT',
-              lastChecked: dependencyCopacetic.lastChecked
+              lastChecked: dependency.lastChecked
             })
           })
       })
@@ -261,12 +291,31 @@ describe('Copacetic', () => {
 
         copacetic
           .check({ name: 'My-Dependency' })
-          .on('unhealthy', (dependencyCopacetic) => {
-            expect(dependencyCopacetic).to.deep.equal({
+          .on('unhealthy', (dependency) => {
+            expect(dependency).to.deep.equal({
               name: 'My-Dependency',
               healthy: false,
               level: 'SOFT',
-              lastChecked: dependencyCopacetic.lastChecked
+              lastChecked: dependency.lastChecked
+            })
+          })
+      })
+
+      it('should return a promise when not in eventEmitterMode', () => {
+        nock('http://example.com')
+            .get('/')
+            .reply(200)
+
+        copacetic.eventEmitterMode = false
+
+        copacetic
+          .check({ name: 'My-Dependency' })
+          .then((dependency) => {
+            expect(dependency).to.deep.equal({
+              name: 'My-Dependency',
+              healthy: false,
+              level: 'SOFT',
+              lastChecked: dependency.lastChecked
             })
           })
       })
@@ -370,7 +419,7 @@ describe('Copacetic', () => {
             { name: 'My-Other-Dependency' }
           ]
         })
-        .on('health', (healthSummary) => {
+        .on('health', (healthSummary, stop) => {
           expect(healthSummary).to.deep.equal([
             {
               name: 'My-Dependency',
@@ -385,9 +434,33 @@ describe('Copacetic', () => {
               lastChecked: healthSummary[1].lastChecked
             }
           ])
-        })
 
-      setTimeout(() => copacetic.stop(), 100)
+          stop()
+        })
+    })
+
+    it('should poll a single dependency', () => {
+      const copacetic = Copacetic()
+      copacetic.registerDependency({
+        name: 'My-Dependency',
+        url: 'http://example.com'
+      })
+      nock('http://example.com')
+          .get('/')
+          .reply(200)
+
+      copacetic
+        .poll({ name: 'My-Dependency' })
+        .on('health', (healthSummary, stop) => {
+          expect(healthSummary).to.deep.equal({
+            name: 'My-Dependency',
+            healthy: true,
+            level: 'SOFT',
+            lastChecked: healthSummary[0].lastChecked
+          })
+
+          stop()
+        })
     })
   })
 
