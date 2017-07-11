@@ -345,7 +345,7 @@ interface Copacetic extends NodeJS.EventEmitter {
     parallel?: boolean
   }): R,
 
-  on(event: string | symbol, listener: Function): this,
+  on (event: string | symbol, listener: Function): this,
 
   /**
    * Register an event listener for the 'health' event. Used when checking
