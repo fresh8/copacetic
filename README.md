@@ -48,6 +48,18 @@ copacetic
   .on('unhealthy', (Dependency) => {
     // Handle degraded state...
   })
+
+// in promise mode
+copacetic.eventEmitterMode = false
+
+copacetic
+  .check({ name: 'my-web-service' })
+  .then((res) => {
+    console.log(`${res.name} is healthy!`)
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 ```
 
 #### Quick Start - Typescript
@@ -71,6 +83,20 @@ instance
   .on('unhealthy', (res: Copacetic.Health) => {
     // handle degraded state
   })
+
+// in promise mode
+copacetic.eventEmitterMode = false
+
+async function waitForWebService () {
+  try {
+    const res = await instance
+      .check<Copacetic.Health>({ name: 'my-web-service' })
+
+    console.log(`${res.name} is healthy!`)
+  } catch (err) {
+    console.log(err)
+  }
+}
 ```
 
 <a name="Copacetic"></a>
