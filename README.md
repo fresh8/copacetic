@@ -98,9 +98,6 @@ async function waitForWebService () {
   }
 }
 ```
-
-<a name="Copacetic"></a>
-
 <a name="Copacetic"></a>
 
 ## Copacetic ⇐ <code>EventEmitter</code>
@@ -116,10 +113,11 @@ async function waitForWebService () {
     * [.registerDependency(opts)](#Copacetic+registerDependency) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.deregisterDependency(name)](#Copacetic+deregisterDependency) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.pollAll([interval], [parallel], [schedule])](#Copacetic+pollAll) ⇒ [<code>Copacetic</code>](#Copacetic)
-    * [.poll([dependencies], [interval], [parallel], [schedule])](#Copacetic+poll) ⇒ [<code>Copacetic</code>](#Copacetic)
+    * [.poll([name], [dependencies], [interval], [parallel], [schedule])](#Copacetic+poll) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.stop()](#Copacetic+stop)
     * [.checkAll([parallel])](#Copacetic+checkAll) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.check([name], [dependencies], [retries], [parallel])](#Copacetic+check) ⇒ [<code>Copacetic</code>](#Copacetic)
+    * [.waitFor(opts)](#Copacetic+waitFor)
     * ["healthy"](#Copacetic+event_healthy)
     * ["unhealthy"](#Copacetic+event_unhealthy)
     * ["health"](#Copacetic+event_health)
@@ -198,7 +196,7 @@ Polls the health of all registered dependencies
 
 <a name="Copacetic+poll"></a>
 
-### copacetic.poll([dependencies], [interval], [parallel], [schedule]) ⇒ [<code>Copacetic</code>](#Copacetic)
+### copacetic.poll([name], [dependencies], [interval], [parallel], [schedule]) ⇒ [<code>Copacetic</code>](#Copacetic)
 Polls the health of a set of dependencies
 
 **Kind**: instance method of [<code>Copacetic</code>](#Copacetic)  
@@ -206,6 +204,7 @@ Polls the health of a set of dependencies
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
+| [name] | <code>String</code> |  | The identifier of a single dependency to be checked |
 | [dependencies] | <code>Array.&lt;Object&gt;</code> |  | An explicit set of dependencies to be polled |
 | [interval] | <code>String</code> | <code>&#x27;5 seconds&#x27;</code> |  |
 | [parallel] | <code>Boolean</code> | <code>true</code> | Kick of health checks in parallel or series |
@@ -216,15 +215,22 @@ Polls the health of a set of dependencies
 copacetic.poll({
   dependencies: [
     { name: 'my-dep' },
-    { name: 'my-other-dep', retries: 2 }
+    { name: 'my-other-dep', retries: 2, maxDelay: '2 seconds' }
   ],
   schedule: 'end',
   interval: '1 minute 30 seconds'
 })
-.on('health', (serviceHealth) => {
+.on('health', (serviceHealth, stop) => {
   // Do something with the result
   // [{ name: String, health: Boolean, level: HARD/SOFT, lastCheck: Date }]
+  // stop polling
+  stop()
 })
+```
+**Example**  
+```js
+copacetic.poll({ name: 'my-dependency' })
+.on('health', () => { ... Do something })
 ```
 <a name="Copacetic+stop"></a>
 
@@ -265,19 +271,51 @@ copacetic.check({ name: 'my-dependency' })
 **Example**  
 ```js
 copacetic.check({ name: 'my-dependency', retries: 5 })
-.on('healthy', serviceHealth => { // Do stuff })
-.on('unhealthy', serviceHealth => { // Handle degraded state })
+.on('healthy', serviceHealth => { ... Do stuff })
+.on('unhealthy', serviceHealth => { ... Handle degraded state })
 ```
 **Example**  
 ```js
 copacetic.check({ dependencies: [
   { name: 'my-dep' },
-  { name: 'my-other-dep', retries: 2 }
+  { name: 'my-other-dep', retries: 2, maxDelay: '1 second' }
 ] })
 .on('health', (servicesHealth) => {
   // Do something with the result
   // [{ name: String, health: Boolean, level: HARD/SOFT, lastCheck: Date }]
 })
+```
+**Example**  
+```js
+copacetic.check({ name: 'my-dependency' })
+.then((health) => { ... Do Stuff })
+.catch((err) => { ... Handle degraded state })
+```
+<a name="Copacetic+waitFor"></a>
+
+### copacetic.waitFor(opts)
+Convenience method that waits for a single, or set of dependencies
+to become healthy. Calling this means copacetic will keep re-checking
+indefinitely until the dependency(s) become healthy. If you want more
+control, use .check().
+
+**Kind**: instance method of [<code>Copacetic</code>](#Copacetic)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| opts | <code>Object</code> | options accepted by check() |
+
+**Example**  
+```js
+// wait indefinitely
+copacetic.waitFor({ name: 'my-dependency'})
+.on('healthy', serviceHealth => { ... Do stuff })
+```
+**Example**  
+```js
+// give up after 5 tries
+copacetic.waitFor({ name: 'my-dependency', retries: 5})
+.on('healthy', serviceHealth => { ... Do stuff })
 ```
 <a name="Copacetic+event_healthy"></a>
 
