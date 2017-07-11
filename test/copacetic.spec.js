@@ -215,7 +215,7 @@ describe('Copacetic', () => {
     })
 
     it('should check the health of all registered dependencies', () => {
-      copacetic
+      return copacetic
         .checkAll()
         .on('healthy', (dependencies) => {
           expect(dependencies).to.deep.equal([
