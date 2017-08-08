@@ -376,7 +376,7 @@ interface Copacetic extends NodeJS.EventEmitter {
 }
 
 
-declare function copacetic (
+declare function Copacetic (
   /**
    * The name of your service. This is output in the express
    * middleware when verbose is true
@@ -391,7 +391,7 @@ declare function copacetic (
   eventEmitterMode?: boolean
 ): Copacetic
 
-declare namespace copacetic {
+declare namespace Copacetic {
   /**
    * holds information about the health of a dependency, and executes strategies for
    * checking a dependency's health
@@ -668,4 +668,4 @@ declare namespace copacetic {
   export function HealthStrategy(options: HealthStrategyOptions): Function
 }
 
-export = copacetic
+export = Copacetic
