@@ -1,15 +1,18 @@
 const expect = require('chai').expect
 const nock = require('nock')
 
+
 describe('Dependency', () => {
   let Dependency
   let dependency
+  let DependencyFactory
 
   before(() => {
+    DependencyFactory = require('../lib/dependency')
     const CodependencyMock = require('./mocks/codependency')
     const Injector = require('../lib/util/injector')
 
-    Dependency = require('../lib/dependency')(
+    Dependency = DependencyFactory(
       Injector(CodependencyMock({
         'node-fetch': require('node-fetch')
       }))
@@ -111,6 +114,56 @@ describe('Dependency', () => {
             lastChecked: r.lastChecked
           }).to.deep.equal(r)
         })
+    })
+
+    describe('with a nominally non-throwing dependency', () => {
+      const baseDependencyConfig = {
+        name: 'token',
+        url: 'kitty-kitty'
+      }
+
+      function makeDependency(dependencyConfig, strategy) {
+        const Injector = require('../lib/util/injector')
+        const mockedStrategyInjector = Injector((name) => strategy)
+        DependencyFactory = require('../lib/dependency')
+        dependencyConfig.strategy = {type: 'mockedStrategy'}
+        return DependencyFactory(mockedStrategyInjector)(dependencyConfig)
+      }
+
+      it("reports healthy", () => {
+        const dependency = makeDependency(baseDependencyConfig, {
+          check() {
+            return Promise.resolve({ iAm: 'fine' })
+          },
+          areYouOk(data) {
+            return data.iAm === 'fine'
+          }
+        })
+        return dependency
+          .check()
+          .then((r) => {
+            expect(r.healthy).to.equal(true)
+          })
+      })
+
+      it("reports unhealthy", () => {
+        const dependency = makeDependency(baseDependencyConfig, {
+          check() {
+            return Promise.resolve({ iAm: 'not fine' })
+          },
+          areYouOk(data) {
+            return data.iAm === 'fine'
+          }
+        })
+        return dependency
+          .check()
+          .then((r) => {
+            throw new Error('no pasaran')
+          })
+          .catch((r) => {
+            expect(r.healthy).to.equal(false)
+          })
+      })
     })
   })
 })

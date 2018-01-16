@@ -26,7 +26,7 @@ describe("Copacetic Strategy", () => {
     return health //let mocha itself realise it worked fine as promise should resolve
   })
 
-  it("Throws on unhealthy dependency", () => {
+  it("Throws on unhealthy dependency", () => { //TODO adapt to the new non-throw model so the healthSummary can then be updated even on un-healthy deps
     const strategy = new CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: false })
     })
