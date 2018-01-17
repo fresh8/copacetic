@@ -55,4 +55,23 @@ describe("Copacetic Strategy", () => {
     })
   })
   //TODO test it considers unhealthy on timeout
+
+  describe("Health Summary", () => {
+    const strategy = new CopaceticStrategy({
+      getHealth: () => Promise.resolve({ isHealthy: false })
+    })
+
+    it("should be defined", () => {
+      assert.isDefined(strategy.improveSummary)
+      expect(strategy.improveSummary).to.be.a.Function
+    })
+
+    it("enhances the health summary with dependencies status", () => {
+      const baseSummary = { healthy: true }
+      const checkResult = { dependencies: [ { name: 'database' }] }
+      strategy.improveSummary(baseSummary, checkResult)
+      assert.isDefined(baseSummary.dependencies)
+      expect(baseSummary.dependencies).to.deep.equal(checkResult.dependencies)
+    })
+  })
 })
