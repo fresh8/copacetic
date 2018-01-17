@@ -9,16 +9,16 @@ describe("Copacetic Strategy", () => {
   })
 
   it("should produce a valid HealthStrategy", () => {
-    expect(new CopaceticStrategy()).to.be.an.instanceOf(HealthStrategy)
+    expect(CopaceticStrategy()).to.be.an.instanceOf(HealthStrategy)
   })
 
   it("should implement cleanup", () => {
-    const strategy = new CopaceticStrategy()
+    const strategy = CopaceticStrategy()
     expect(strategy.cleanup).to.not.throw()
   })
 
   it("Succeeds on healthy dependency", () => {
-    const strategy = new CopaceticStrategy({
+    const strategy = CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: true })
     })
     const health = strategy.check()
@@ -30,7 +30,7 @@ describe("Copacetic Strategy", () => {
   })
 
   it("Reports unhealthy", () => { //
-    const strategy = new CopaceticStrategy({
+    const strategy = CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: false })
     })
     return strategy.check()
@@ -40,7 +40,7 @@ describe("Copacetic Strategy", () => {
   })
 
   describe("areYouOk", () => {
-    const strategy = new CopaceticStrategy({
+    const strategy = CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: false })
     })
 
@@ -57,7 +57,7 @@ describe("Copacetic Strategy", () => {
   //TODO test it considers unhealthy on timeout
 
   describe("Health Summary", () => {
-    const strategy = new CopaceticStrategy({
+    const strategy = CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: false })
     })
 
