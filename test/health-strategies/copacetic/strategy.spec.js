@@ -1,4 +1,4 @@
-const { expect } = require('chai')
+const { expect, assert } = require('chai')
 
 const HealthStrategy = require('../../../lib/health-strategies/strategy')
 const CopaceticStrategy = require('../../../lib/health-strategies/copacetic/strategy')
@@ -23,18 +23,36 @@ describe("Copacetic Strategy", () => {
     })
     const health = strategy.check()
     expect(health).to.be.a.Promise
-    return health //let mocha itself realise it worked fine as promise should resolve
+    return health
+      .then((res) => {
+        expect(res.isHealthy).to.equal(true)
+      })
   })
 
-  it("Throws on unhealthy dependency", () => { //TODO adapt to the new non-throw model so the healthSummary can then be updated even on un-healthy deps
+  it("Reports unhealthy", () => { //
     const strategy = new CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: false })
     })
     return strategy.check()
-      .catch((e) => {
-        expect(e.message).to.contain("reported itself as not healthy")
-        return Promise.resolve(true)
+      .then((res) => {
+        expect(res.isHealthy).to.equal(false)
       })
+  })
+
+  describe("areYouOk", () => {
+    const strategy = new CopaceticStrategy({
+      getHealth: () => Promise.resolve({ isHealthy: false })
+    })
+
+    it("should be defined", () => {
+      assert.isDefined(strategy.areYouOk)
+      expect(strategy.areYouOk).to.be.a.Function
+    })
+
+    it("should report health correctly", () => {
+      expect(strategy.areYouOk({isHealthy: false})).to.equal(false)
+      expect(strategy.areYouOk({isHealthy: true})).to.equal(true)
+    })
   })
   //TODO test it considers unhealthy on timeout
 })
