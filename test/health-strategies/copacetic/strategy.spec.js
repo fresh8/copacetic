@@ -97,7 +97,6 @@ describe("Copacetic Strategy", () => {
       expect(strategy.areYouOk({isHealthy: true})).to.equal(true)
     })
   })
-  //TODO test it considers unhealthy on timeout
 
   describe("Health Summary", () => {
     const strategy = CopaceticStrategy({
