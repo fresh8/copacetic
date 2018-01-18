@@ -15,14 +15,14 @@ function mockForCluster(clusterMock, workerId) {
 }
 
 describe("Cluster Message Adapter", () => {
-  describe("getHealth", () => {
-    it("Has a getHealth function", () => {
+  describe("checkHealth", () => {
+    it("Has a checkHealth function", () => {
       const strategy = mockForCluster({
         isMaster: true,
         workers: [ { onGetHealth() { } } ]
       })
 
-      assert.isDefined(strategy.adapter.getHealth)
+      assert.isDefined(strategy.adapter.checkHealth)
     })
 
     it("Returns a promise", () => {
@@ -31,8 +31,8 @@ describe("Cluster Message Adapter", () => {
         workers: [ { onGetHealth() { } } ]
       })
 
-      assert.isDefined(strategy.adapter.getHealth)
-      expect(strategy.adapter.getHealth()).to.be.a.Promise
+      assert.isDefined(strategy.adapter.checkHealth)
+      expect(strategy.adapter.checkHealth()).to.be.a.Promise
     })
 
 
@@ -44,7 +44,7 @@ describe("Cluster Message Adapter", () => {
       })
 
       return new Promise((resolve, reject) => {
-        strategy.adapter.getHealth()
+        strategy.adapter.checkHealth()
           .then(reject)
           .catch((e) => {
             try {
@@ -70,7 +70,7 @@ describe("Cluster Message Adapter", () => {
         ]
       })
 
-      return strategy.adapter.getHealth({id: 1})
+      return strategy.adapter.checkHealth({id: 1})
         .then(res => expect(res.isHealthy).to.equal(true))
     })
 
@@ -93,7 +93,7 @@ describe("Cluster Message Adapter", () => {
         ]
       })
 
-      return strategy.adapter.getHealth({id: 2})
+      return strategy.adapter.checkHealth({id: 2})
         .then((res) => {
           expect(res.isHealthy).to.equal(false)
           expect(res.name).to.equal(2)

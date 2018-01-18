@@ -19,7 +19,7 @@ describe("Copacetic Strategy", () => {
 
   it("Succeeds on healthy dependency", () => {
     const strategy = CopaceticStrategy({
-      getHealth: () => Promise.resolve({ isHealthy: true })
+      checkHealth: () => Promise.resolve({ isHealthy: true })
     })
     const health = strategy.check()
     expect(health).to.be.a.Promise
@@ -31,7 +31,7 @@ describe("Copacetic Strategy", () => {
 
   it("Reports unhealthy", () => { //
     const strategy = CopaceticStrategy({
-      getHealth: () => Promise.resolve({ isHealthy: false })
+      checkHealth: () => Promise.resolve({ isHealthy: false })
     })
     return strategy.check()
       .then((res) => {
@@ -41,7 +41,7 @@ describe("Copacetic Strategy", () => {
 
   it("passes on worker information to the adapter", () => {
     const strategy = CopaceticStrategy({
-      getHealth: (context) => Promise.resolve(context)
+      checkHealth: (context) => Promise.resolve(context)
     }, { nodeContext: { papers: 'please'}})
     return strategy.check()
       .then((res) => {
@@ -51,7 +51,7 @@ describe("Copacetic Strategy", () => {
 
   describe("areYouOk", () => {
     const strategy = CopaceticStrategy({
-      getHealth: () => Promise.resolve({ isHealthy: false })
+      checkHealth: () => Promise.resolve({ isHealthy: false })
     })
 
     it("should be defined", () => {
@@ -68,7 +68,7 @@ describe("Copacetic Strategy", () => {
 
   describe("Health Summary", () => {
     const strategy = CopaceticStrategy({
-      getHealth: () => Promise.resolve({ isHealthy: false })
+      checkHealth: () => Promise.resolve({ isHealthy: false })
     })
 
     it("should be defined", () => {
