@@ -6,12 +6,14 @@ const CodependencyMock = require('../../../mocks/codependency')
 const Injector = require('../../../../lib/util/injector')
 const CopaceticStrategyFactory = require('../../../../lib/health-strategies/copacetic')
 
-function mockForCluster(clusterMock, workerId) {
-  return CopaceticStrategyFactory(
+function mockForCluster(clusterMock) {
+  const strategy = CopaceticStrategyFactory(
     Injector(CodependencyMock({
       clusterMessage: clusterMessageMock(clusterMock)
     }))
   )()
+  strategy.adapter.init()
+  return strategy
 }
 
 describe("Cluster Message Adapter", () => {

@@ -49,6 +49,31 @@ describe("Copacetic Strategy", () => {
       })
   })
 
+  describe("init", () => {
+    it("calls the adapter init function", () => {
+      const strategy = CopaceticStrategy({
+        init() {this.hasInit = true}
+      })
+      strategy.init()
+      expect(strategy.adapter.hasInit).to.equal(true)
+    })
+
+    it("does not crash if the adapter has no init function", () => {
+      const strategy = CopaceticStrategy({ })
+      expect(strategy.init.bind(strategy)).to.not.throw()
+    })
+
+    it("only init once", () => {
+      const strategy = CopaceticStrategy({
+        hasInit: 0,
+        init() {this.hasInit++}
+      })
+      strategy.init()
+      strategy.init()
+      expect(strategy.adapter.hasInit).to.equal(1)
+    })
+  })
+
   describe("areYouOk", () => {
     const strategy = CopaceticStrategy({
       checkHealth: () => Promise.resolve({ isHealthy: false })
