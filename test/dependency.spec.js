@@ -136,15 +136,16 @@ describe('Dependency', () => {
           expect(summary.healthy).to.equal(true)
           assert.isDefined(summary.whatDidISay)
           expect(summary.whatDidISay).to.equal('fine')
-          return dependency.check() //check again, unhealthy
-            .then((r) => {
-              throw new Error('¡No pasarán!')
-            })
+          return new Promise((resolve, reject) => {
+            dependency.check() //check again, unhealthy
+            .then(reject)
             .catch(() => {
               const summary = dependency.healthSummary
               expect(summary.healthy).to.equal(false)
               assert.isUndefined(summary.whatDidISay) //when in throwing mode, there is no way to provide health information to the summary
+              resolve()
             })
+          })
         })
     })
   })
@@ -240,14 +241,15 @@ describe('Dependency', () => {
             return data.iAm === 'fine'
           }
         })
-        return dependency
+        return new Promise((resolve, reject) => {
+          dependency
           .check()
-          .then((r) => {
-            throw new Error('¡No pasarán!')
-          })
+          .then(reject)
           .catch((r) => {
             expect(r.healthy).to.equal(false)
+            resolve()
           })
+        })
       })
     })
 

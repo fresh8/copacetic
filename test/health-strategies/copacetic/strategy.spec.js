@@ -39,6 +39,16 @@ describe("Copacetic Strategy", () => {
       })
   })
 
+  it("passes on worker information to the adapter", () => {
+    const strategy = CopaceticStrategy({
+      getHealth: (context) => Promise.resolve(context)
+    }, { nodeContext: { papers: 'please'}})
+    return strategy.check()
+      .then((res) => {
+        expect(res.papers).to.equal('please')
+      })
+  })
+
   describe("areYouOk", () => {
     const strategy = CopaceticStrategy({
       getHealth: () => Promise.resolve({ isHealthy: false })
