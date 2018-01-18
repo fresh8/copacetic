@@ -6,13 +6,13 @@ const CodependencyMock = require('../../../mocks/codependency')
 const Injector = require('../../../../lib/util/injector')
 const CopaceticStrategyFactory = require('../../../../lib/health-strategies/copacetic')
 
-function mockForCluster(clusterMock) {
+function mockForCluster(clusterMock, clusterOptions, adapterOptions) {
   const strategy = CopaceticStrategyFactory(
     Injector(CodependencyMock({
-      clusterMessage: clusterMessageMock(clusterMock)
+      clusterMessage: clusterMessageMock(clusterMock, clusterOptions)
     }))
   )()
-  strategy.adapter.init()
+  strategy.adapter.init(adapterOptions)
   return strategy
 }
 
@@ -100,6 +100,33 @@ describe("Cluster Message Adapter", () => {
           expect(res.isHealthy).to.equal(false)
           expect(res.name).to.equal(2)
         })
+    })
+
+    it("considers unhealthy on timeout", () => {
+      const strategy = mockForCluster({
+        isMaster: true,
+        workers: [
+          {
+            id: 1,
+            onGetHealth1() {
+              return { isHealthy: true }
+            }
+          }
+        ]
+      }, {playDead: true}, {timeout: 500})
+
+      return new Promise((resolve, reject) => {
+        strategy.adapter.checkHealth({id: 1})
+          .then(reject)
+          .catch((e) => {
+            try {
+              expect(e.message).to.contain("timed out")
+            } catch(e) {
+              return reject(e)
+            }
+            resolve()
+          })
+      })
     })
   })
 })

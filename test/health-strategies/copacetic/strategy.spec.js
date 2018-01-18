@@ -58,6 +58,14 @@ describe("Copacetic Strategy", () => {
       expect(strategy.adapter.hasInit).to.equal(true)
     })
 
+    it("passes on the timeout parameter", () => {
+      const strategy = CopaceticStrategy({
+        init(opts) {this.time = opts.timeout}
+      })
+      strategy.init()
+      assert.isDefined(strategy.adapter.time)
+    })
+
     it("does not crash if the adapter has no init function", () => {
       const strategy = CopaceticStrategy({ })
       expect(strategy.init.bind(strategy)).to.not.throw()
