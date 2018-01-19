@@ -15,7 +15,14 @@ class ClusterMock extends EventEmitter {
 
   mockNewWorker(config) {
     this.workers[config.id] = new Worker(config)
+    this.emit('fork', this.workers[config.id])
     this.emit('online', this.workers[config.id])
+  }
+
+  mockWorkerDeath(id) {
+    this.emit('disconnect', this.workers[id])
+    this.emit('exit', this.workers[id])
+    delete this.workers[id]
   }
 }
 

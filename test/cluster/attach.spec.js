@@ -6,6 +6,11 @@ const makeCopacetic = require('../../lib/copacetic')
 const makeClusterMock = require('../mocks/cluster')
 const makeClusterMessageMock = require('../mocks/cluster-message')
 
+function fakeAdapter(worker) {
+  worker.cleanup = () => {} 
+  return worker
+}
+
 function mockForCluster(cluster) {
   const mockedCluster = makeClusterMock(cluster)
   const modules = {
@@ -17,7 +22,7 @@ function mockForCluster(cluster) {
     return modules[name]
   })
 
-  const copacetic = makeCopacetic(i => i)("Mocked")
+  const copacetic = makeCopacetic(fakeAdapter)("Mocked")
   return { attach: makeAttach(injector), cluster: mockedCluster, copacetic }
 }
 
@@ -62,7 +67,28 @@ describe('Cluster Attach', () => {
       expect(copacetic.healthInfo.length).to.equal(1)
     })
 
-    //TODO other events disconnect/exit/others?
+    it("should remove workers when they die", () => {
+      const { attach, copacetic, cluster } = mockForCluster({
+        isMaster: true,
+        workers: [
+          {id: 1, healthSummary: "healthy"},
+          {id: 2, healthSummary: "not healthy"}
+        ]
+      })
+      attach(copacetic)
+      cluster.mockWorkerDeath(1)
+      expect(copacetic.healthInfo.length).to.equal(1)
+    })
+
+    //TODO figure out how to test this and implement it.
+    //it("should add an IPC listener to respond to workers asking health", () => {
+    //  const { attach, copacetic, cluster } = mockForCluster({
+    //    isMaster: true,
+    //    workers: [
+    //      {id: 1, healthSummary: "healthy"}
+    //    ]
+    //  })
+    //})
   })
 
   //TODO isWorker and all associated events
