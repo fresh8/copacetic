@@ -10,7 +10,7 @@ module.exports = function factory(clusterMock, clusterMockOptions = {}) {
       }
 
       if(clusterMock.isMaster) {
-        for(let worker of clusterMock.workers) {
+        for(let worker of clusterMock.workers) { //TODO cluster.workers is a hash, not an array
           const listener = worker[`on${eventName}`]
           if(!listener) {
             continue

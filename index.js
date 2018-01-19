@@ -18,3 +18,5 @@ module.exports.dependencyLevel = dependencyLevel
 module.exports.Middleware = require('./lib/middleware')
 
 module.exports.HealthStrategy = HealthFactoryProvider(injector)
+
+module.exports.joinCluster = require('./lib/cluster')
