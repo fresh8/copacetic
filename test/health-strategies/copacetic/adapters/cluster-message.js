@@ -1,19 +1,21 @@
 const { expect, assert } = require('chai')
 
+const makeClusterMock = require('../../../mocks/cluster')
+const clusterMessageMock = require('../../../mocks/cluster-message')
+
 
 describe("Cluster Message Adapter", () => {
   let mockForCluster
 
   before(() => {
-    const clusterMessageMock = require('../../../mocks/cluster-message')
     const CodependencyMock = require('../../../mocks/codependency')
     const Injector = require('../../../../lib/util/injector')
     const CopaceticStrategyFactory = require('../../../../lib/health-strategies/copacetic')
 
-    mockForCluster = function mockForCluster(clusterMock, clusterOptions, adapterOptions) {
+    mockForCluster = function mockForCluster(clusterMockConfig, clusterOptions, adapterOptions) {
       const strategy = CopaceticStrategyFactory(
         Injector(CodependencyMock({
-          'cluster-messages': clusterMessageMock(clusterMock, clusterOptions)
+          'cluster-messages': clusterMessageMock(makeClusterMock(clusterMockConfig), clusterOptions)
         }))
       )()
       strategy.adapter.init(adapterOptions)

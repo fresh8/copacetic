@@ -1,13 +1,14 @@
 const { assert, expect } = require('chai')
 
-const copaceticMock = require('../mocks/copacetic')
 const injectorFactory = require('../../lib/util/injector')
-const makeClusterMessageMock = require('../mocks/cluster-message')
 const makeAttach = require('../../lib/cluster/attach')
+const copaceticMock = require('../mocks/copacetic')
+const makeClusterMock = require('../mocks/cluster')
+const makeClusterMessageMock = require('../mocks/cluster-message')
 
 function mockForCluster(cluster) {
   const modules = {
-    cluster,
+    cluster: makeClusterMock(cluster),
     'cluster-messages': makeClusterMessageMock(cluster)
   }
 
@@ -32,7 +33,7 @@ describe('Cluster Attach', () => {
       const copacetic = new copaceticMock()
       const attach = mockForCluster({
         isMaster: true,
-        workers: {1: {id: 1, healthSummary: "healthy"}, 2: {id: 2, healthSummary: "not healthy"}}
+        workers: [{id: 1, healthSummary: "healthy"}, {id: 2, healthSummary: "not healthy"}]
       })
       attach(copacetic)
       const health = copacetic.healthInfo
