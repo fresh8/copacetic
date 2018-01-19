@@ -12,6 +12,11 @@ class ClusterMock extends EventEmitter {
       return hash
     }, {})
   }
+
+  mockNewWorker(config) {
+    this.workers[config.id] = new Worker(config)
+    this.emit('online', this.workers[config.id])
+  }
 }
 
 class Worker extends EventEmitter {

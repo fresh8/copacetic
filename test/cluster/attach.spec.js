@@ -2,20 +2,23 @@ const { assert, expect } = require('chai')
 
 const injectorFactory = require('../../lib/util/injector')
 const makeAttach = require('../../lib/cluster/attach')
-const copaceticMock = require('../mocks/copacetic')
+const makeCopacetic = require('../../lib/copacetic')
 const makeClusterMock = require('../mocks/cluster')
 const makeClusterMessageMock = require('../mocks/cluster-message')
 
 function mockForCluster(cluster) {
+  const mockedCluster = makeClusterMock(cluster)
   const modules = {
-    cluster: makeClusterMock(cluster),
+    cluster: mockedCluster,
     'cluster-messages': makeClusterMessageMock(cluster)
   }
 
   const injector = injectorFactory((name) => {
     return modules[name]
   })
-  return makeAttach(injector)
+
+  const copacetic = makeCopacetic(i => i)("Mocked")
+  return { attach: makeAttach(injector), cluster: mockedCluster, copacetic }
 }
 
 describe('Cluster Attach', () => {
@@ -25,13 +28,12 @@ describe('Cluster Attach', () => {
   })
 
   it("builds a function", () => {
-    expect(mockForCluster({})).to.be.a('function')
+    expect(mockForCluster({}).attach).to.be.a('function')
   })
 
   describe("master", () => {
     it("should automatically add workers as dependencies", () => {
-      const copacetic = new copaceticMock()
-      const attach = mockForCluster({
+      const { attach, copacetic } = mockForCluster({
         isMaster: true,
         workers: [{id: 1, healthSummary: "healthy"}, {id: 2, healthSummary: "not healthy"}]
       })
@@ -40,7 +42,29 @@ describe('Cluster Attach', () => {
       expect(health.length).to.equal(2)
     })
 
-    //TODO test it reacts to 'fork' events as well as disconnect/exit/others?
+    it("should automatically add new workers as they get ready", () => {
+      const { attach, cluster, copacetic } = mockForCluster({ isMaster: true, workers: []})
+
+      attach(copacetic)
+
+      cluster.mockNewWorker({id: 1})
+      expect(copacetic.healthInfo.length).to.equal(1)
+    })
+
+    it("shouldn't duplicate existing workers", () => {
+      //this is in case the first loop on cluster.workers is finished processing before all of those workers emit the `online` event
+      const { attach, cluster, copacetic } = mockForCluster({ isMaster: true, workers: []})
+
+      attach(copacetic)
+
+      cluster.mockNewWorker({id: 1})
+      cluster.mockNewWorker({id: 1})
+      expect(copacetic.healthInfo.length).to.equal(1)
+    })
+
+    //TODO other events disconnect/exit/others?
   })
+
+  //TODO isWorker and all associated events
 })
 
