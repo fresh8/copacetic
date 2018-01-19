@@ -5,7 +5,7 @@ const CopaceticStrategy = require('../../../lib/health-strategies/copacetic/stra
 
 describe("Copacetic Strategy", () => {
   it("should export a function", () => {
-    expect(CopaceticStrategy).to.be.a.Function
+    expect(CopaceticStrategy).to.be.a('function')
   })
 
   it("should produce a valid HealthStrategy", () => {
@@ -22,7 +22,7 @@ describe("Copacetic Strategy", () => {
       checkHealth: () => Promise.resolve({ isHealthy: true })
     })
     const health = strategy.check()
-    expect(health).to.be.a.Promise
+    expect(health).to.be.a('promise')
     return health
       .then((res) => {
         expect(res.isHealthy).to.equal(true)
@@ -89,7 +89,7 @@ describe("Copacetic Strategy", () => {
 
     it("should be defined", () => {
       assert.isDefined(strategy.areYouOk)
-      expect(strategy.areYouOk).to.be.a.Function
+      expect(strategy.areYouOk).to.be.a('function')
     })
 
     it("should report health correctly", () => {
@@ -105,7 +105,7 @@ describe("Copacetic Strategy", () => {
 
     it("should be defined", () => {
       assert.isDefined(strategy.improveSummary)
-      expect(strategy.improveSummary).to.be.a.Function
+      expect(strategy.improveSummary).to.be.a('function')
     })
 
     it("enhances the health summary with dependencies status", () => {

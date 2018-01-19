@@ -38,7 +38,7 @@ describe("Cluster Message Adapter", () => {
       })
 
       assert.isDefined(strategy.adapter.checkHealth)
-      expect(strategy.adapter.checkHealth()).to.be.a.Promise
+      expect(strategy.adapter.checkHealth()).to.be.a('promise')
     })
 
 
