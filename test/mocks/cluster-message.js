@@ -1,22 +1,22 @@
-module.exports = function factory(clusterMock, clusterMockOptions = {}) {
+module.exports = function factory (clusterMock, clusterMockOptions = {}) {
   return class ClusterMessagesMock {
-    constructor(options) {
+    constructor (options) {
       this.options = options
     }
 
-    send(eventName, data, callback) {
-      if(clusterMockOptions.playDead) {
+    send (eventName, data, callback) {
+      if (clusterMockOptions.playDead) {
         return
       }
 
-      if(clusterMock.isMaster) {
-        if(clusterMock.workerListeners && clusterMock.workerListeners[`on${eventName}`]) {
+      if (clusterMock.isMaster) {
+        if (clusterMock.workerListeners && clusterMock.workerListeners[`on${eventName}`]) {
           clusterMock.workerListeners[`on${eventName}`](data, callback)
         } else {
-          for(const id in clusterMock.workers) {
+          for (const id in clusterMock.workers) {
             const worker = clusterMock.workers[id]
             const listener = worker[`on${eventName}`]
-            if(!listener) {
+            if (!listener) {
               continue
             }
             callback(listener(data))
@@ -27,14 +27,14 @@ module.exports = function factory(clusterMock, clusterMockOptions = {}) {
       }
     }
 
-    on(eventName, listener) {
-      if(clusterMock.isMaster) {
-        if(!clusterMock.masterListeners) {
+    on (eventName, listener) {
+      if (clusterMock.isMaster) {
+        if (!clusterMock.masterListeners) {
           clusterMock.masterListeners = {}
         }
         clusterMock.masterListeners[`on${eventName}`] = listener
       } else {
-        if(!clusterMock.workerListeners) {
+        if (!clusterMock.workerListeners) {
           clusterMock.workerListeners = {}
         }
         clusterMock.workerListeners[`on${eventName}`] = listener

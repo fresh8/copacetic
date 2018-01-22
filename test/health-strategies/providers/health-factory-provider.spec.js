@@ -51,7 +51,7 @@ describe('HealthFactoryProvider', () => {
     expect(postgresStrategy.adapter.ping).to.be.a('function')
   })
 
-  it("should return a copacetic strategy", () => {
+  it('should return a copacetic strategy', () => {
     const copaceticStrategy = HealthFactoryProvider(injector)({ type: 'copacetic' })
 
     expect(copaceticStrategy.check).to.be.a('function')

@@ -1,19 +1,18 @@
 const { expect, assert } = require('chai')
 const nock = require('nock')
 
-function makeDependencyWithStrategy(dependencyConfig, strategy) {
-  const Injector = require('../lib/util/injector')
-  const mockedStrategyInjector = Injector((name) => strategy)
-  DependencyFactory = require('../lib/dependency')
-  dependencyConfig.strategy = {type: 'mockedStrategy'}
-  return DependencyFactory(mockedStrategyInjector)(dependencyConfig)
-}
-
-
 describe('Dependency', () => {
   let Dependency
   let dependency
   let DependencyFactory
+
+  function makeDependencyWithStrategy (dependencyConfig, strategy) {
+    const Injector = require('../lib/util/injector')
+    const mockedStrategyInjector = Injector((name) => strategy)
+    DependencyFactory = require('../lib/dependency')
+    dependencyConfig.strategy = {type: 'mockedStrategy'}
+    return DependencyFactory(mockedStrategyInjector)(dependencyConfig)
+  }
 
   before(() => {
     DependencyFactory = require('../lib/dependency')
@@ -68,12 +67,12 @@ describe('Dependency', () => {
       }).to.deep.equal(dependency.healthSummary)
     })
 
-    it("Can improve the summary on healthy", () => {
+    it('Can improve the summary on healthy', () => {
       const dependency = makeDependencyWithStrategy(baseDependencyConfig, {
-        check() {
+        check () {
           return Promise.resolve({ iAm: 'fine' })
         },
-        improveSummary(summary, checkResult) {
+        improveSummary (summary, checkResult) {
           summary.whatDidISay = checkResult.iAm
         }
       })
@@ -87,22 +86,22 @@ describe('Dependency', () => {
           expect(summary.whatDidISay).to.equal('fine')
         })
     })
-    
-    it("Can report on unhealthy if information is provided", () => {
+
+    it('Can report on unhealthy if information is provided', () => {
       const dependency = makeDependencyWithStrategy(baseDependencyConfig, {
-        check() {
+        check () {
           return Promise.resolve({ iAm: 'not fine' })
         },
-        areYouOk(result) {
-          return false //this dependency is never healthy
+        areYouOk (result) {
+          return false // this dependency is never healthy
         },
-        improveSummary(summary, checkResult) {
+        improveSummary (summary, checkResult) {
           summary.whatDidISay = checkResult.iAm
         }
       })
 
       return dependency
-        .check() //will throw, cause unhealthy
+        .check() // will throw, cause unhealthy
         .catch(() => {
           const summary = dependency.healthSummary
           expect(summary.healthy).to.equal(false)
@@ -111,25 +110,25 @@ describe('Dependency', () => {
         })
     })
 
-    it("Cleanes up past enhancement when in throw mode and unhealthly", () => {
+    it('Cleanes up past enhancement when in throw mode and unhealthly', () => {
       let howIFeel = 'fine'
       const dependency = makeDependencyWithStrategy(baseDependencyConfig, {
-        check() {
+        check () {
           const iAmHealthy = howIFeel === 'fine'
-          if(iAmHealthy) {
+          if (iAmHealthy) {
             return Promise.resolve({ iAm: howIFeel })
           }
-          return Promise.reject("Argh")
+          return Promise.reject(new Error('Argh'))
         },
-        improveSummary(summary, checkResult) {
-          if(checkResult) {
+        improveSummary (summary, checkResult) {
+          if (checkResult) {
             summary.whatDidISay = checkResult.iAm
           }
         }
       })
 
       return dependency
-        .check() //check once, healthy
+        .check() // check once, healthy
         .then(() => {
           howIFeel = 'not fine'
           const summary = dependency.healthSummary
@@ -137,12 +136,12 @@ describe('Dependency', () => {
           assert.isDefined(summary.whatDidISay)
           expect(summary.whatDidISay).to.equal('fine')
           return new Promise((resolve, reject) => {
-            dependency.check() //check again, unhealthy
+            dependency.check() // check again, unhealthy
             .then(reject)
             .catch(() => {
               const summary = dependency.healthSummary
               expect(summary.healthy).to.equal(false)
-              assert.isUndefined(summary.whatDidISay) //when in throwing mode, there is no way to provide health information to the summary
+              assert.isUndefined(summary.whatDidISay) // when in throwing mode, there is no way to provide health information to the summary
               resolve()
             })
           })
@@ -216,12 +215,12 @@ describe('Dependency', () => {
         url: 'kitty-kitty'
       }
 
-      it("reports healthy", () => {
+      it('reports healthy', () => {
         const dependency = makeDependencyWithStrategy(baseDependencyConfig, {
-          check() {
+          check () {
             return Promise.resolve({ iAm: 'fine' })
           },
-          areYouOk(data) {
+          areYouOk (data) {
             return data.iAm === 'fine'
           }
         })
@@ -232,12 +231,12 @@ describe('Dependency', () => {
           })
       })
 
-      it("reports unhealthy", () => {
+      it('reports unhealthy', () => {
         const dependency = makeDependencyWithStrategy(baseDependencyConfig, {
-          check() {
+          check () {
             return Promise.resolve({ iAm: 'not fine' })
           },
-          areYouOk(data) {
+          areYouOk (data) {
             return data.iAm === 'fine'
           }
         })
@@ -252,6 +251,5 @@ describe('Dependency', () => {
         })
       })
     })
-
   })
 })

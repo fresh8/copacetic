@@ -4,8 +4,7 @@ const constants = require('../../../../lib/cluster/constants')
 const makeClusterMock = require('../../../mocks/cluster')
 const clusterMessageMock = require('../../../mocks/cluster-message')
 
-
-describe("Cluster Message Adapter", () => {
+describe('Cluster Message Adapter', () => {
   const GET_HEALTH = constants.EVENT_NAMES.MASTER_ASKING_HEALTH
   let mockForCluster
 
@@ -14,7 +13,7 @@ describe("Cluster Message Adapter", () => {
     const Injector = require('../../../../lib/util/injector')
     const CopaceticStrategyFactory = require('../../../../lib/health-strategies/copacetic')
 
-    mockForCluster = function mockForCluster(clusterMockConfig, clusterOptions, adapterOptions) {
+    mockForCluster = function mockForCluster (clusterMockConfig, clusterOptions, adapterOptions) {
       const strategy = CopaceticStrategyFactory(
         Injector(CodependencyMock({
           'cluster-messages': clusterMessageMock(makeClusterMock(clusterMockConfig), clusterOptions)
@@ -25,8 +24,8 @@ describe("Cluster Message Adapter", () => {
     }
   })
 
-  describe("checkHealth", () => {
-    it("Has a checkHealth function", () => {
+  describe('checkHealth', () => {
+    it('Has a checkHealth function', () => {
       const strategy = mockForCluster({
         isMaster: true,
         workers: []
@@ -35,7 +34,7 @@ describe("Cluster Message Adapter", () => {
       assert.isDefined(strategy.adapter.checkHealth)
     })
 
-    it("Returns a promise", () => {
+    it('Returns a promise', () => {
       const strategy = mockForCluster({
         isMaster: true,
         workers: []
@@ -45,12 +44,11 @@ describe("Cluster Message Adapter", () => {
       expect(strategy.adapter.checkHealth()).to.be.a('promise')
     })
 
-
-    it("Throws if no worker information given", () => {
-      //this is because cluster-message currently has no way of contacting a single worker, if no worker id were to be provided the message would essentially be replied to by all workers
+    it('Throws if no worker information given', () => {
+      // this is because cluster-message currently has no way of contacting a single worker, if no worker id were to be provided the message would essentially be replied to by all workers
       const strategy = mockForCluster({
         isMaster: true,
-        workers: [ { noopFn() { } } ]
+        workers: [ { noopFn () { } } ]
       })
 
       return new Promise((resolve, reject) => {
@@ -58,8 +56,8 @@ describe("Cluster Message Adapter", () => {
           .then(reject)
           .catch((e) => {
             try {
-              expect(e.message).to.contain("Missing worker id")
-            } catch(e) {
+              expect(e.message).to.contain('Missing worker id')
+            } catch (e) {
               return reject(e)
             }
             resolve()
@@ -67,13 +65,13 @@ describe("Cluster Message Adapter", () => {
       })
     })
 
-    it("Is able to request the health of a child process", () => {
+    it('Is able to request the health of a child process', () => {
       const strategy = mockForCluster({
         isMaster: true,
         workers: [
           {
             id: 1,
-            [`on${GET_HEALTH}1`]() {
+            [`on${GET_HEALTH}1`] () {
               return { isHealthy: true }
             }
           }
@@ -84,19 +82,19 @@ describe("Cluster Message Adapter", () => {
         .then(res => expect(res.isHealthy).to.equal(true))
     })
 
-    it("Is able to request the health of the correct worker amongst multiple", () => {
+    it('Is able to request the health of the correct worker amongst multiple', () => {
       const strategy = mockForCluster({
         isMaster: true,
         workers: [
           {
             id: 1,
-            [`on${GET_HEALTH}1`]() {
+            [`on${GET_HEALTH}1`] () {
               return { name: 1, isHealthy: true }
             }
           },
           {
             id: 2,
-            [`on${GET_HEALTH}2`]() {
+            [`on${GET_HEALTH}2`] () {
               return { name: 2, isHealthy: false }
             }
           }
@@ -110,13 +108,13 @@ describe("Cluster Message Adapter", () => {
         })
     })
 
-    it("considers unhealthy on timeout", () => {
+    it('considers unhealthy on timeout', () => {
       const strategy = mockForCluster({
         isMaster: true,
         workers: [
           {
             id: 1,
-            [`on${GET_HEALTH}1`]() {
+            [`on${GET_HEALTH}1`] () {
               return { isHealthy: true }
             }
           }
@@ -128,8 +126,8 @@ describe("Cluster Message Adapter", () => {
           .then(reject)
           .catch((e) => {
             try {
-              expect(e.message).to.contain("timed out")
-            } catch(e) {
+              expect(e.message).to.contain('timed out')
+            } catch (e) {
               return reject(e)
             }
             resolve()

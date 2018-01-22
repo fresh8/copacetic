@@ -116,8 +116,8 @@ describe('Copacetic', () => {
   })
 
   describe('healthReport', () => {
-    it("should return the full health report", () => {
-      const copacetic = Copacetic("my-service")
+    it('should return the full health report', () => {
+      const copacetic = Copacetic('my-service')
       copacetic.registerDependency({
         name: 'My-Dependency',
         url: 'http://example.com'
@@ -125,10 +125,10 @@ describe('Copacetic', () => {
 
       expect(copacetic.healthReport).to.deep.equal(
         {
-          name: "my-service",
+          name: 'my-service',
           isHealthy: true,
           dependencies: [
-          {
+            {
               name: 'My-Dependency',
               healthy: true,
               level: 'SOFT',
