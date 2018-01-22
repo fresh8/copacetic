@@ -6,24 +6,30 @@ const makeCopacetic = require('../../lib/copacetic')
 const makeClusterMock = require('../mocks/cluster')
 const makeClusterMessageMock = require('../mocks/cluster-message')
 
-function fakeAdapter(worker) {
+function fakeDependencyAdapter(worker) {
   worker.cleanup = () => {} 
+  worker.check = () => { return Promise.resolve(worker) }
+  worker.healthSummary = {
+    name: worker.name,
+    level: worker.level,
+    isHealthy: true
+  }
   return worker
 }
 
-function mockForCluster(cluster) {
+function mockForCluster(cluster, buildOpts) {
   const mockedCluster = makeClusterMock(cluster)
   const modules = {
     cluster: mockedCluster,
-    'cluster-messages': makeClusterMessageMock(cluster)
+    'cluster-messages': new (makeClusterMessageMock(mockedCluster))()
   }
 
   const injector = injectorFactory((name) => {
     return modules[name]
   })
 
-  const copacetic = makeCopacetic(fakeAdapter)("Mocked")
-  return { attach: makeAttach(injector), cluster: mockedCluster, copacetic }
+  const copacetic = makeCopacetic(fakeDependencyAdapter)("Mocked", (buildOpts || {}).promiseMode === false)
+  return { attach: makeAttach(injector), cluster: mockedCluster, copacetic, clusterMessages: modules['cluster-messages'] }
 }
 
 describe('Cluster Attach', () => {
@@ -37,6 +43,11 @@ describe('Cluster Attach', () => {
   })
 
   describe("master", () => {
+    it("should reject being attached to a copacetic not in Promise mode", () => {
+      const { attach, copacetic } = mockForCluster({ isMaster: true, }, {promiseMode: false})
+      expect(attach.bind(attach, copacetic)).to.throw("emitter")
+    })
+
     it("should automatically add workers as dependencies", () => {
       const { attach, copacetic } = mockForCluster({
         isMaster: true,
@@ -80,15 +91,34 @@ describe('Cluster Attach', () => {
       expect(copacetic.healthInfo.length).to.equal(1)
     })
 
-    //TODO figure out how to test this and implement it.
-    //it("should add an IPC listener to respond to workers asking health", () => {
-    //  const { attach, copacetic, cluster } = mockForCluster({
-    //    isMaster: true,
-    //    workers: [
-    //      {id: 1, healthSummary: "healthy"}
-    //    ]
-    //  })
-    //})
+    it("should add an IPC listener to respond to workers asking health", () => {
+      const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+        isMaster: true,
+        workers: [
+          {id: 1, healthSummary: "healthy"}
+        ]
+      })
+      attach(copacetic)
+
+      cluster.isMaster = false
+
+      return new Promise((resolve, reject) => { 
+        try {
+          clusterMessages.send(attach.EVENT_NAMES.ASK_MASTER_HEALTH, {}, health => {
+            try {
+              assert.isDefined(health)
+              assert.isDefined(health.isHealthy)
+              assert.isDefined(health.dependencies)
+              resolve()
+            } catch(e) {
+              reject(e)
+            }
+          })
+        } catch(e) {
+          reject(e)
+        }
+      })
+    })
   })
 
   //TODO isWorker and all associated events

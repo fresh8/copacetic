@@ -19,7 +19,16 @@ module.exports = function factory(clusterMock, clusterMockOptions = {}) {
           callback(listener(data))
         }
       } else {
-        callback(clusterMock.master[`on${eventName}`](data))
+        clusterMock.masterListeners[`on${eventName}`](data, callback)
+      }
+    }
+
+    on(eventName, listener) {
+      if(clusterMock.isMaster) {
+        if(!clusterMock.masterListeners) {
+          clusterMock.masterListeners = {}
+        }
+        clusterMock.masterListeners[`on${eventName}`] = listener
       }
     }
   }

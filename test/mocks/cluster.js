@@ -5,10 +5,10 @@ class ClusterMock extends EventEmitter {
   constructor(config) {
     super()
 
-    Object.assign(this, config)
+    this.isMaster = config.isMaster
 
     this.workers = (config.workers || []).reduce((hash, worker) => {
-      hash[worker.id] = new Worker(worker)
+      hash[worker.id] = new Worker(worker, this)
       return hash
     }, {})
   }
@@ -24,13 +24,28 @@ class ClusterMock extends EventEmitter {
     this.emit('exit', this.workers[id])
     delete this.workers[id]
   }
+
+  callListener(eventName, cb) {
+    if(!this.listeners || !this.listeners[eventName]) {
+      throw new Error("Unknown listener")
+    }
+    this.listeners[eventName](cb)
+  }
 }
 
 class Worker extends EventEmitter {
-  constructor(config) {
+  constructor(config, master) {
     super()
 
     Object.assign(this, config)
+    this.master = master
+  }
+
+  send(message, handle, callback) {
+    if(!callback) {
+      callback = handle
+    }
+    this.master.callListener(message, callback)
   }
 }
 
