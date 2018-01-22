@@ -105,17 +105,22 @@ async function waitForWebService () {
 const Copacetic = require('@fresh8/copacetic')
 const level = require('@fresh8/copacetic').dependencyLevel
 
-const copacetic = Copacetic()
+const copacetic = Copacetic("A name", false)
 
 Copacetic.cluster.attach(copacetic)
 
-if(process.worker) {
+if (process.worker) {
     //register your usual dependencies like databases
 
 
     //use the line below to have the worker ask the master process a full health report
     copacetic.checkCluster() //`checkCluster` is only defined if the process is a worker and if you called `attach()`
         .then(console.log)
+} else {
+    copacetic.checkAll()
+        .then(() => {
+            console.log(copacetic.healthReport) //Contains health information as reported by the workers
+        })
 }
 ```
 
