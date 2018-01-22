@@ -114,7 +114,8 @@ if(process.worker) {
 
 
     //use the line below to have the worker ask the master process a full health report
-    console.log(copacetic.checkCluster()) //`checkCluster` is only defined if the process is a worker and if you called `attach()`
+    copacetic.checkCluster() //`checkCluster` is only defined if the process is a worker and if you called `attach()`
+        .then(console.log)
 }
 ```
 
