@@ -99,6 +99,21 @@ async function waitForWebService () {
 }
 ```
 
+## Classes
+
+<dl>
+<dt><a href="#Copacetic">Copacetic</a> ⇐ <code>EventEmitter</code></dt>
+<dd></dd>
+</dl>
+
+## Typedefs
+
+<dl>
+<dt><a href="#HealthReport">HealthReport</a> : <code>Object</code></dt>
+<dd><p>The full health report including isHealthy and dependencies</p>
+</dd>
+</dl>
+
 <a name="Copacetic"></a>
 
 ## Copacetic ⇐ <code>EventEmitter</code>
@@ -109,6 +124,7 @@ async function waitForWebService () {
     * [new Copacetic([name])](#new_Copacetic_new)
     * [.isHealthy](#Copacetic+isHealthy) ⇒ <code>Boolean</code>
     * [.healthInfo](#Copacetic+healthInfo) ⇒ <code>Array.&lt;DependencyHealth&gt;</code>
+    * [.healthReport](#Copacetic+healthReport) ⇒ [<code>HealthReport</code>](#HealthReport)
     * [.getDependency(dependency)](#Copacetic+getDependency) ⇒ <code>Dependency</code>
     * [.isDependencyRegistered(dependency)](#Copacetic+isDependencyRegistered) ⇒ <code>Boolean</code>
     * [.registerDependency(opts)](#Copacetic+registerDependency) ⇒ [<code>Copacetic</code>](#Copacetic)
@@ -143,6 +159,11 @@ async function waitForWebService () {
 ### copacetic.healthInfo ⇒ <code>Array.&lt;DependencyHealth&gt;</code>
 **Kind**: instance property of [<code>Copacetic</code>](#Copacetic)  
 **Returns**: <code>Array.&lt;DependencyHealth&gt;</code> - Health information on all dependencies  
+<a name="Copacetic+healthReport"></a>
+
+### copacetic.healthReport ⇒ [<code>HealthReport</code>](#HealthReport)
+**Kind**: instance property of [<code>Copacetic</code>](#Copacetic)  
+**Returns**: [<code>HealthReport</code>](#HealthReport) - A full report of health information and dependencies  
 <a name="Copacetic+getDependency"></a>
 
 ### copacetic.getDependency(dependency) ⇒ <code>Dependency</code>
@@ -360,3 +381,17 @@ Health information on a single dependency
 Health information on a set of dependencies
 
 **Kind**: event emitted by [<code>Copacetic</code>](#Copacetic)  
+<a name="HealthReport"></a>
+
+## HealthReport : <code>Object</code>
+The full health report including isHealthy and dependencies
+
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| isHealthy | <code>Boolean</code> | The result of [isHealthy](#Copacetic+isHealthy) |
+| Name | <code>String</code> |  |
+| dependencies | <code>Array.&lt;DependencyHealth&gt;</code> | The result of [healthInfo](#Copacetic+healthInfo) |
+
