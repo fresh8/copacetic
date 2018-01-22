@@ -10,13 +10,17 @@ module.exports = function factory(clusterMock, clusterMockOptions = {}) {
       }
 
       if(clusterMock.isMaster) {
-        for(const id in clusterMock.workers) {
-          const worker = clusterMock.workers[id]
-          const listener = worker[`on${eventName}`]
-          if(!listener) {
-            continue
+        if(clusterMock.workerListeners && clusterMock.workerListeners[`on${eventName}`]) {
+          clusterMock.workerListeners[`on${eventName}`](data, callback)
+        } else {
+          for(const id in clusterMock.workers) {
+            const worker = clusterMock.workers[id]
+            const listener = worker[`on${eventName}`]
+            if(!listener) {
+              continue
+            }
+            callback(listener(data))
           }
-          callback(listener(data))
         }
       } else {
         clusterMock.masterListeners[`on${eventName}`](data, callback)
@@ -29,6 +33,11 @@ module.exports = function factory(clusterMock, clusterMockOptions = {}) {
           clusterMock.masterListeners = {}
         }
         clusterMock.masterListeners[`on${eventName}`] = listener
+      } else {
+        if(!clusterMock.workerListeners) {
+          clusterMock.workerListeners = {}
+        }
+        clusterMock.workerListeners[`on${eventName}`] = listener
       }
     }
   }

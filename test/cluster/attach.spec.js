@@ -1,5 +1,6 @@
 const { assert, expect } = require('chai')
 
+const constants = require('../../lib/cluster/constants')
 const injectorFactory = require('../../lib/util/injector')
 const makeAttach = require('../../lib/cluster/attach')
 const makeCopacetic = require('../../lib/copacetic')
@@ -104,7 +105,7 @@ describe('Cluster Attach', () => {
 
       return new Promise((resolve, reject) => { 
         try {
-          clusterMessages.send(attach.EVENT_NAMES.ASK_MASTER_HEALTH, {}, health => {
+          clusterMessages.send(constants.EVENT_NAMES.ASK_MASTER_HEALTH, {}, health => {
             try {
               assert.isDefined(health)
               assert.isDefined(health.isHealthy)
@@ -149,11 +150,9 @@ describe('Cluster Attach', () => {
     it("should expose a function to ask master what the health of the entire cluster is", () => {
       const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
         isMaster: false,
-        workers: [
-          {id: 1, healthSummary: "healthy"}
-        ],
+        worker: {id: 1},
         masterListeners: {
-          [`on${makeAttach.EVENT_NAMES.ASK_MASTER_HEALTH}`]: (data, callback) => {
+          [`on${constants.EVENT_NAMES.ASK_MASTER_HEALTH}`]: (data, callback) => {
             callback({isHealthy: true})
           }
         }
@@ -175,6 +174,34 @@ describe('Cluster Attach', () => {
           }
         })
         .catch(reject)
+      })
+    })
+
+    it("should register listener for master's health enquiry", () => {
+      const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+        isMaster: false,
+        worker: {id: 1}
+      })
+
+      attach(copacetic)
+
+      cluster.isMaster = true
+
+      return new Promise((resolve, reject) => { 
+        try {
+          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}1`, {}, health => {
+            try {
+              assert.isDefined(health)
+              assert.isDefined(health.isHealthy)
+              assert.isDefined(health.dependencies)
+              resolve()
+            } catch(e) {
+              reject(e)
+            }
+          })
+        } catch(e) {
+          reject(e)
+        }
       })
     })
   })

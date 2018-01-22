@@ -1,10 +1,12 @@
 const { expect, assert } = require('chai')
 
+const constants = require('../../../../lib/cluster/constants')
 const makeClusterMock = require('../../../mocks/cluster')
 const clusterMessageMock = require('../../../mocks/cluster-message')
 
 
 describe("Cluster Message Adapter", () => {
+  const GET_HEALTH = constants.EVENT_NAMES.MASTER_ASKING_HEALTH
   let mockForCluster
 
   before(() => {
@@ -27,7 +29,7 @@ describe("Cluster Message Adapter", () => {
     it("Has a checkHealth function", () => {
       const strategy = mockForCluster({
         isMaster: true,
-        workers: [ { onGetHealth() { } } ]
+        workers: []
       })
 
       assert.isDefined(strategy.adapter.checkHealth)
@@ -36,7 +38,7 @@ describe("Cluster Message Adapter", () => {
     it("Returns a promise", () => {
       const strategy = mockForCluster({
         isMaster: true,
-        workers: [ { onGetHealth() { } } ]
+        workers: []
       })
 
       assert.isDefined(strategy.adapter.checkHealth)
@@ -48,7 +50,7 @@ describe("Cluster Message Adapter", () => {
       //this is because cluster-message currently has no way of contacting a single worker, if no worker id were to be provided the message would essentially be replied to by all workers
       const strategy = mockForCluster({
         isMaster: true,
-        workers: [ { onGetHealth() { } } ]
+        workers: [ { noopFn() { } } ]
       })
 
       return new Promise((resolve, reject) => {
@@ -71,7 +73,7 @@ describe("Cluster Message Adapter", () => {
         workers: [
           {
             id: 1,
-            onGetHealth1() {
+            [`on${GET_HEALTH}1`]() {
               return { isHealthy: true }
             }
           }
@@ -88,13 +90,13 @@ describe("Cluster Message Adapter", () => {
         workers: [
           {
             id: 1,
-            onGetHealth1() {
+            [`on${GET_HEALTH}1`]() {
               return { name: 1, isHealthy: true }
             }
           },
           {
             id: 2,
-            onGetHealth2() {
+            [`on${GET_HEALTH}2`]() {
               return { name: 2, isHealthy: false }
             }
           }
@@ -114,7 +116,7 @@ describe("Cluster Message Adapter", () => {
         workers: [
           {
             id: 1,
-            onGetHealth1() {
+            [`on${GET_HEALTH}1`]() {
               return { isHealthy: true }
             }
           }

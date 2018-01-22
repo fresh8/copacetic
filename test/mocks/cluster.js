@@ -8,10 +8,16 @@ class ClusterMock extends EventEmitter {
     this.isMaster = config.isMaster
     this.masterListeners = config.masterListeners
 
-    this.workers = (config.workers || []).reduce((hash, worker) => {
-      hash[worker.id] = new Worker(worker, this)
-      return hash
-    }, {})
+    if(config.workers) {
+      this.workers = (config.workers || []).reduce((hash, worker) => {
+        hash[worker.id] = new Worker(worker, this)
+        return hash
+      }, {})
+    }
+
+    if(config.worker) {
+      this.worker = new Worker(config.worker, this)
+    }
   }
 
   mockNewWorker(config) {
