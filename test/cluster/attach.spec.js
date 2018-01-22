@@ -119,6 +119,30 @@ describe('Cluster Attach', () => {
         }
       })
     })
+
+    describe("Dependency level", () => {
+      it("defaults dependency level", () => {
+        const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+          isMaster: true,
+          workers: [
+            {id: 1, healthSummary: "healthy"}
+          ]
+        })
+        attach(copacetic)
+        expect(copacetic.dependencyIndex['1'].level).to.equal('HARD')
+      })
+
+      it("supports configurable dependency level", () => {
+        const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+          isMaster: true,
+          workers: [
+            {id: 1, healthSummary: "healthy"}
+          ]
+        })
+        attach(copacetic, {dependency: {level: 'Unicorn'}})
+        expect(copacetic.dependencyIndex['1'].level).to.equal('Unicorn')
+      })
+    })
   })
 
   describe('worker', () => {
