@@ -1,0 +1,102 @@
+# Copacetic
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Coverage Status](https://coveralls.io/repos/github/fresh8/copacetic/badge.svg?branch=master)](https://coveralls.io/github/fresh8/copacetic?branch=master)
+[![CircleCI](https://circleci.com/gh/fresh8/copacetic.svg?style=svg)](https://circleci.com/gh/fresh8/copacetic)
+
+A package to help your service check the health of its dependencies.
+
+
+## Requirements
+Node v6.4.0 and above
+
+## Installation
+```
+npm install @fresh8/copacetic --save
+```
+
+#### Quick Start - Javascript
+```javascript
+const Copacetic = require('@fresh8/copacetic')
+const level = require('@fresh8/copacetic').dependencyLevel
+
+const copacetic = Copacetic()
+
+// Register a dependency
+copacetic.registerDependency({
+  name: 'My-Dependency',
+  url: 'https://my-Dependency.io',
+  // Defaults to SOFT
+  level: level.HARD
+})
+
+
+// Check its health
+copacetic
+  .check({
+    name: 'My-Dependency',
+    retries: 2
+  })
+  .on('healthy', (Dependency) => {
+    /**
+     * { name: 'My-Dependency',
+     *   healthy: true/false,
+     *   lastChecked: Date,
+     *   level: 'SOFT'
+     * }
+     */
+  })
+  .on('unhealthy', (Dependency) => {
+    // Handle degraded state...
+  })
+
+// in promise mode
+copacetic.eventEmitterMode = false
+
+copacetic
+  .check({ name: 'my-web-service' })
+  .then((res) => {
+    console.log(`${res.name} is healthy!`)
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+```
+
+#### Quick Start - Typescript
+```typescript
+import * as Copacetic from '@fresh8/copacetic'
+
+const copacetic = Copacetic('my-service')
+
+const myDependencyOverHttp : Copacetic.DependencyOptions = {
+  name: 'my-web-service',
+  url: 'http://example.com'
+}
+
+copacetic.registerDependency(myDependencyOverHttp)
+
+instance
+  .check({ name: 'my-web-service' })
+  .on('healthy', (res: Copacetic.Health) => {
+    // do something with your healthy dependency :)
+  })
+  .on('unhealthy', (res: Copacetic.Health) => {
+    // handle degraded state
+  })
+
+// in promise mode
+copacetic.eventEmitterMode = false
+
+async function waitForWebService () {
+  try {
+    const res = await instance
+      .check<Copacetic.Health>({ name: 'my-web-service' })
+
+    console.log(`${res.name} is healthy!`)
+  } catch (err) {
+    console.log(err)
+  }
+}
+```
+
+{{>main}}

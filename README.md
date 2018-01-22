@@ -98,6 +98,7 @@ async function waitForWebService () {
   }
 }
 ```
+
 <a name="Copacetic"></a>
 
 ## Copacetic ⇐ <code>EventEmitter</code>
@@ -118,6 +119,8 @@ async function waitForWebService () {
     * [.checkAll([parallel])](#Copacetic+checkAll) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.check([name], [dependencies], [retries], [parallel])](#Copacetic+check) ⇒ [<code>Copacetic</code>](#Copacetic)
     * [.waitFor(opts)](#Copacetic+waitFor)
+    * [._checkOne(name, maxDelay)](#Copacetic+_checkOne) ⇒ <code>Promise</code>
+    * [._checkMany(dependencies, parallel)](#Copacetic+_checkMany) ⇒ <code>Promise</code>
     * ["healthy"](#Copacetic+event_healthy)
     * ["unhealthy"](#Copacetic+event_unhealthy)
     * ["health"](#Copacetic+event_health)
@@ -147,7 +150,7 @@ async function waitForWebService () {
 
 | Param | Type |
 | --- | --- |
-| dependency | <code>Dependency</code> \| <code>String</code> |
+| dependency | <code>Dependency</code> \| <code>String</code> | 
 
 <a name="Copacetic+isDependencyRegistered"></a>
 
@@ -157,7 +160,7 @@ async function waitForWebService () {
 
 | Param | Type |
 | --- | --- |
-| dependency | <code>Dependency</code> \| <code>String</code> |
+| dependency | <code>Dependency</code> \| <code>String</code> | 
 
 <a name="Copacetic+registerDependency"></a>
 
@@ -190,9 +193,9 @@ Polls the health of all registered dependencies
 
 | Param | Type | Default |
 | --- | --- | --- |
-| [interval] | <code>String</code> | <code>&#x27;5 seconds&#x27;</code> |
-| [parallel] | <code>Boolean</code> | <code>true</code> |
-| [schedule] | <code>String</code> | <code>&#x27;start&#x27;</code> |
+| [interval] | <code>String</code> | <code>&#x27;5 seconds&#x27;</code> | 
+| [parallel] | <code>Boolean</code> | <code>true</code> | 
+| [schedule] | <code>String</code> | <code>&#x27;start&#x27;</code> | 
 
 <a name="Copacetic+poll"></a>
 
@@ -317,6 +320,28 @@ copacetic.waitFor({ name: 'my-dependency'})
 copacetic.waitFor({ name: 'my-dependency', retries: 5})
 .on('healthy', serviceHealth => { ... Do stuff })
 ```
+<a name="Copacetic+_checkOne"></a>
+
+### copacetic._checkOne(name, maxDelay) ⇒ <code>Promise</code>
+**Kind**: instance method of [<code>Copacetic</code>](#Copacetic)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>String</code> | The name used to identify a dependency |
+| maxDelay | <code>Integer</code> | The maximum interval of time to wait when retrying |
+
+<a name="Copacetic+_checkMany"></a>
+
+### copacetic._checkMany(dependencies, parallel) ⇒ <code>Promise</code>
+Checks an array of dependencies in parallel or sequantially
+
+**Kind**: instance method of [<code>Copacetic</code>](#Copacetic)  
+
+| Param | Type |
+| --- | --- |
+| dependencies | <code>Array.&lt;Dependency&gt;</code> | 
+| parallel | <code>Boolean</code> | 
+
 <a name="Copacetic+event_healthy"></a>
 
 ### "healthy"
