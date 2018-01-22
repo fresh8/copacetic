@@ -6,6 +6,7 @@ class ClusterMock extends EventEmitter {
     super()
 
     this.isMaster = config.isMaster
+    this.masterListeners = config.masterListeners
 
     this.workers = (config.workers || []).reduce((hash, worker) => {
       hash[worker.id] = new Worker(worker, this)

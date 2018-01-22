@@ -121,6 +121,38 @@ describe('Cluster Attach', () => {
     })
   })
 
-  //TODO isWorker and all associated events
+  describe('worker', () => {
+    it("should expose a function to ask master what the health of the entire cluster is", () => {
+      const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+        isMaster: false,
+        workers: [
+          {id: 1, healthSummary: "healthy"}
+        ],
+        masterListeners: {
+          [`on${makeAttach.EVENT_NAMES.ASK_MASTER_HEALTH}`]: (data, callback) => {
+            callback({isHealthy: true})
+          }
+        }
+      })
+      attach(copacetic)
+
+      assert.isDefined(copacetic.checkCluster)
+      expect(copacetic.checkCluster).to.be.a('function')
+      const health = copacetic.checkCluster()
+      expect(health).to.be.a('promise')
+
+      return new Promise((resolve, reject) => {
+        health.then(result => {
+          try {
+            assert.isDefined(result.isHealthy)
+            resolve()
+          } catch(e) {
+            reject(e)
+          }
+        })
+        .catch(reject)
+      })
+    })
+  })
 })
 
