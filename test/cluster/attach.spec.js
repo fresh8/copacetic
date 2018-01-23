@@ -180,7 +180,8 @@ describe('Cluster Attach', () => {
     it("should register listener for master's health enquiry", () => {
       const { attach, copacetic, cluster } = mockForCluster({
         isMaster: false,
-        worker: {id: 1}
+        worker: {id: 2},
+        workers: [{id: 1}, {id: 2}]
       })
 
       const {clusterMessages} = attach(copacetic)
@@ -189,7 +190,7 @@ describe('Cluster Attach', () => {
 
       return new Promise((resolve, reject) => {
         try {
-          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}1`, {}, health => {
+          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}`, {recipient: 2}, health => {
             try {
               assert.isDefined(health)
               assert.isDefined(health.isHealthy)

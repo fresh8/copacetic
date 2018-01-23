@@ -11,7 +11,7 @@ module.exports = function factory (clusterMock, clusterMockOptions = {}) {
 
       if (clusterMock.isMaster) {
         if (clusterMock.workerListeners && clusterMock.workerListeners[`on${eventName}`]) {
-          clusterMock.workerListeners[`on${eventName}`](data, callback)
+          clusterMock.workerListeners[`on${eventName}`].forEach(fn => fn(data, callback))
         } else {
           for (const id in clusterMock.workers) {
             const worker = clusterMock.workers[id]
@@ -19,7 +19,7 @@ module.exports = function factory (clusterMock, clusterMockOptions = {}) {
             if (!listener) {
               continue
             }
-            callback(listener(data))
+            listener(data, callback)
           }
         }
       } else {
@@ -37,7 +37,10 @@ module.exports = function factory (clusterMock, clusterMockOptions = {}) {
         if (!clusterMock.workerListeners) {
           clusterMock.workerListeners = {}
         }
-        clusterMock.workerListeners[`on${eventName}`] = listener
+        if(!clusterMock.workerListeners[`on${eventName}`]) {
+          clusterMock.workerListeners[`on${eventName}`] = []
+        }
+        clusterMock.workerListeners[`on${eventName}`].push(listener)
       }
     }
   }

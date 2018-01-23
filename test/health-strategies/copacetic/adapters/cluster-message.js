@@ -71,8 +71,8 @@ describe('Cluster Message Adapter', () => {
         workers: [
           {
             id: 1,
-            [`on${GET_HEALTH}1`] () {
-              return { isHealthy: true }
+            [`on${GET_HEALTH}`] (data, notACallback) {
+              notACallback({ isHealthy: true })
             }
           }
         ]
@@ -88,14 +88,20 @@ describe('Cluster Message Adapter', () => {
         workers: [
           {
             id: 1,
-            [`on${GET_HEALTH}1`] () {
-              return { name: 1, isHealthy: true }
+            [`on${GET_HEALTH}`] (data, notACallback) {
+              if(data.recipient !== 1) {
+                return
+              }
+              notACallback({ name: 1, isHealthy: true })
             }
           },
           {
             id: 2,
-            [`on${GET_HEALTH}2`] () {
-              return { name: 2, isHealthy: false }
+            [`on${GET_HEALTH}`] (data, notACallback) {
+              if(data.recipient !== 2) {
+                return
+              }
+              notACallback({ name: 2, isHealthy: false })
             }
           }
         ]
@@ -114,7 +120,7 @@ describe('Cluster Message Adapter', () => {
         workers: [
           {
             id: 1,
-            [`on${GET_HEALTH}1`] () {
+            [`on${GET_HEALTH}`] () {
               return { isHealthy: true }
             }
           }
