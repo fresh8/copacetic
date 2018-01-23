@@ -37,7 +37,7 @@ module.exports = function factory (clusterMock, clusterMockOptions = {}) {
         if (!clusterMock.workerListeners) {
           clusterMock.workerListeners = {}
         }
-        if(!clusterMock.workerListeners[`on${eventName}`]) {
+        if (!clusterMock.workerListeners[`on${eventName}`]) {
           clusterMock.workerListeners[`on${eventName}`] = []
         }
         clusterMock.workerListeners[`on${eventName}`].push(listener)

@@ -89,7 +89,7 @@ describe('Cluster Message Adapter', () => {
           {
             id: 1,
             [`on${GET_HEALTH}`] (data, notACallback) {
-              if(data.recipient !== 1) {
+              if (data.recipient !== 1) {
                 return
               }
               notACallback({ name: 1, isHealthy: true })
@@ -98,7 +98,7 @@ describe('Cluster Message Adapter', () => {
           {
             id: 2,
             [`on${GET_HEALTH}`] (data, notACallback) {
-              if(data.recipient !== 2) {
+              if (data.recipient !== 2) {
                 return
               }
               notACallback({ name: 2, isHealthy: false })
