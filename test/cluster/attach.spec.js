@@ -22,7 +22,7 @@ function mockForCluster (cluster, buildOpts) {
   const mockedCluster = makeClusterMock(cluster)
   const modules = {
     cluster: mockedCluster,
-    'cluster-messages': new (makeClusterMessageMock(mockedCluster))()
+    'cluster-messages': makeClusterMessageMock(mockedCluster)
   }
 
   const injector = injectorFactory((name) => {
@@ -30,7 +30,7 @@ function mockForCluster (cluster, buildOpts) {
   })
 
   const copacetic = makeCopacetic(fakeDependencyAdapter)('Mocked', (buildOpts || {}).promiseMode === false)
-  return { attach: makeAttach(injector), cluster: mockedCluster, copacetic, clusterMessages: modules['cluster-messages'] }
+  return { attach: makeAttach(injector), cluster: mockedCluster, copacetic }
 }
 
 describe('Cluster Attach', () => {
@@ -93,13 +93,13 @@ describe('Cluster Attach', () => {
     })
 
     it('should add an IPC listener to respond to workers asking health', () => {
-      const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+      const { attach, copacetic, cluster } = mockForCluster({
         isMaster: true,
         workers: [
           {id: 1, healthSummary: 'healthy'}
         ]
       })
-      attach(copacetic)
+      const {clusterMessages} = attach(copacetic)
 
       cluster.isMaster = false
 
@@ -178,12 +178,12 @@ describe('Cluster Attach', () => {
     })
 
     it("should register listener for master's health enquiry", () => {
-      const { attach, copacetic, cluster, clusterMessages } = mockForCluster({
+      const { attach, copacetic, cluster } = mockForCluster({
         isMaster: false,
         worker: {id: 1}
       })
 
-      attach(copacetic)
+      const {clusterMessages} = attach(copacetic)
 
       cluster.isMaster = true
 

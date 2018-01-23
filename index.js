@@ -19,4 +19,4 @@ module.exports.Middleware = require('./lib/middleware')
 
 module.exports.HealthStrategy = HealthFactoryProvider(injector)
 
-module.exports.cluster = require('./lib/cluster')
+module.exports.cluster = require('./lib/cluster')(injector)

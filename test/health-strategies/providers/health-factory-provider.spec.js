@@ -1,6 +1,8 @@
 const expect = require('chai').expect
 const noop = require('node-noop').noop
 
+const makeClusterMock = require('../../mocks/cluster')
+
 describe('HealthFactoryProvider', () => {
   const CodependencyMock = require('../../mocks/codependency')
   const Injector = require('../../../lib/util/injector')
@@ -12,7 +14,7 @@ describe('HealthFactoryProvider', () => {
     'mongodb': noop,
     'ioredis': noop,
     'sequelize': noop,
-    'cluster-messages': noop
+    'cluster-messages': makeClusterMock({})
   }))
 
   it('should export a function', () => {
