@@ -205,5 +205,28 @@ describe('Cluster Attach', () => {
         }
       })
     })
+
+    it("does not reply to messages meant for other clusters", () => {
+      const { attach, copacetic, cluster } = mockForCluster({
+        isMaster: false,
+        worker: {id: 1},
+        workers: [{id: 1}, {id: 2}]
+      })
+
+      const {clusterMessages} = attach(copacetic)
+
+      cluster.isMaster = true
+
+      return new Promise((resolve, reject) => {
+        setTimeout(resolve, 300) //timeout early, if the process responds it will be quicker than 300ms
+        try {
+          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}`, {recipient: 2}, health => {
+            reject("This event should not have been replied to")
+          })
+        } catch (e) {
+          reject(e)
+        }
+      })
+    })
   })
 })
