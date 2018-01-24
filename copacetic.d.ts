@@ -40,7 +40,7 @@ interface Copacetic extends NodeJS.EventEmitter {
    */
   healthReport: {
     isHealthy: boolean,
-    name: String,
+    name: string,
     dependencies: Array<copacetic.Health>
   }
 
