@@ -292,7 +292,7 @@ interface Copacetic extends NodeJS.EventEmitter {
   /**
    * If in cluster mode and this instance has been attached to it, ask the master process for health information of the full cluster
    */
-  checkCluster: function () :Promise<Copacetic>
+  checkCluster: function () :Promise<Copacetic.healthReport>
 
   /**
    * Waits for a single dependency to become healthy
