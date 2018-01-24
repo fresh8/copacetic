@@ -4,7 +4,7 @@
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
-    "coverage": "nyc npm test && nyc report --reporter=lcov",
+    "coverage": "nyc npm test && nyc report",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "doc": "jsdoc2md --template README.hbs lib/copacetic.js > README.md",
     "test": "mocha --recursive ./test",
@@ -39,7 +39,9 @@
         80,
         95
       ]
-    }
+    },
+    "reporter": [ "html", "json" ],
+    "report-dir": "./coverage"
   },
   "repository": {
     "type": "git",
