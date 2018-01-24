@@ -34,6 +34,12 @@ describe('Dependency', () => {
     expect(Dependency).to.be.a('function')
   })
 
+  it("should accept not having a url parameter", () => {
+    const dependency = Dependency({ name: 'test-dependency'})
+    assert.isUndefined(dependency.url)
+  })
+
+
   describe('onHealthy()', () => {
     it('should mark a dependency as healthy', () => {
       dependency.onHealthy()
