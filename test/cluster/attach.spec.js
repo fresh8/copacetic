@@ -206,7 +206,7 @@ describe('Cluster Attach', () => {
       })
     })
 
-    it("does not reply to messages meant for other clusters", () => {
+    it("does not reply to messages meant for other workers", () => {
       const { attach, copacetic, cluster } = mockForCluster({
         isMaster: false,
         worker: {id: 1},
