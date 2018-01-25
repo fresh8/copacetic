@@ -12,4 +12,10 @@ describe('strategy', () => {
   it('should have an execute function', () => {
     expect(strategy.execute).to.be.a('function')
   })
+
+  it('should let information through', () => {
+    const func = () => Promise.resolve('went through')
+    return strategy.execute({func})
+      .then(res => expect(res).to.equal('went through'))
+  })
 })
