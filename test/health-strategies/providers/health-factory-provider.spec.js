@@ -1,6 +1,8 @@
 const expect = require('chai').expect
 const noop = require('node-noop').noop
 
+const makeClusterMock = require('../../mocks/cluster')
+
 describe('HealthFactoryProvider', () => {
   const CodependencyMock = require('../../mocks/codependency')
   const Injector = require('../../../lib/util/injector')
@@ -11,7 +13,8 @@ describe('HealthFactoryProvider', () => {
     'node-fetch': noop,
     'mongodb': noop,
     'ioredis': noop,
-    'sequelize': noop
+    'sequelize': noop,
+    'cluster-messages': makeClusterMock({})
   }))
 
   it('should export a function', () => {
@@ -48,6 +51,13 @@ describe('HealthFactoryProvider', () => {
 
     expect(postgresStrategy.check).to.be.a('function')
     expect(postgresStrategy.adapter.ping).to.be.a('function')
+  })
+
+  it('should return a copacetic strategy', () => {
+    const copaceticStrategy = HealthFactoryProvider(injector)({ type: 'copacetic' })
+
+    expect(copaceticStrategy.check).to.be.a('function')
+    expect(copaceticStrategy.adapter.checkHealth).to.be.a('function')
   })
 
   it('should return null if a strategy is not available', () => {

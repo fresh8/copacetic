@@ -1,6 +1,6 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "3.5.2",
+  "version": "3.6.0",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
@@ -40,7 +40,10 @@
         95
       ]
     },
-    "reporter": [ "html", "json" ],
+    "reporter": [
+      "html",
+      "json"
+    ],
     "report-dir": "./coverage"
   },
   "repository": {
@@ -56,6 +59,7 @@
   "devDependencies": {
     "@types/node": "^6.0.78",
     "chai": "^3.5.0",
+    "cluster-messages": "1.1.2",
     "coveralls": "^2.13.1",
     "ioredis": "3.x",
     "jsdoc-to-markdown": "^4.0.1",
@@ -67,7 +71,7 @@
     "nyc": "^11.0.1",
     "sequelize": "4.x",
     "sinon": "^2.3.6",
-    "standard": "^10.0.2"
+    "standard": "^10.0.3"
   },
   "dependencies": {
     "codependency": "^2.0.1",
@@ -79,6 +83,7 @@
     "precond": "^0.2.3"
   },
   "optionalPeerDependencies": {
+    "cluster-messages": "1.1.2",
     "node-fetch": "1.x",
     "mongodb": "2.x",
     "mongoose": "4.x",

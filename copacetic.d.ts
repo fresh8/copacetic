@@ -36,6 +36,15 @@ interface Copacetic extends NodeJS.EventEmitter {
   healthInfo: Array<copacetic.Health>,
 
   /**
+   * A full health report
+   */
+  healthReport: {
+    isHealthy: boolean,
+    name: string,
+    dependencies: Array<copacetic.Health>
+  }
+
+  /**
    * Returns a registered dependency
    * Examples:
    *
@@ -279,6 +288,11 @@ interface Copacetic extends NodeJS.EventEmitter {
      */
     parallel?: boolean
   }): R,
+
+  /**
+   * If in cluster mode and this instance has been attached to it, ask the master process for health information of the full cluster
+   */
+  checkCluster: function () :Promise<Copacetic.healthReport>
 
   /**
    * Waits for a single dependency to become healthy
@@ -666,6 +680,15 @@ declare namespace Copacetic {
    * Factory function for providing different health strategies
    */
   export function HealthStrategy(options: HealthStrategyOptions): Function
+
+  export namespace cluster {
+    interface AttachOptions {
+      dependency?: {
+        level: dependencyLevel
+      }
+    }
+    export function attach (copacetic: Copacetic, attachOptions?: AttachOptions): Function
+  }
 }
 
 export = Copacetic

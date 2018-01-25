@@ -51,16 +51,19 @@ describe('RedisStrategy - using the ioredis adapter', () => {
   it('should cleanup the connection', () => {
     const strategy = provideRedisStrategy(true)()
 
-    return strategy
-      .check('some-fake-url')
-      .then(() => {
-        expect(strategy.adapter.isConnected).to.equal(true)
+    return new Promise((resolve, reject) => {
+      strategy
+        .check('some-fake-url')
+        .then(() => {
+          expect(strategy.adapter.isConnected).to.equal(true)
 
-        strategy.cleanup()
-      })
+          strategy.adapter.redis.on('close', () => {
+            expect(strategy.adapter.isConnected).to.equal(false)
+            resolve()
+          })
 
-    strategy.adapter.redis.on('close', () => {
-      expect(strategy.adapter.isConnected).to.equal(false)
+          strategy.cleanup()
+        })
     })
   })
 
