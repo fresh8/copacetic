@@ -1,11 +1,12 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "3.5.0",
+  "version": "3.5.2",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
-    "coverage": "nyc npm test && nyc report --reporter=lcov",
+    "coverage": "nyc npm test && nyc report",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
+    "doc": "jsdoc2md --template README.hbs lib/copacetic.js > README.md",
     "test": "mocha --recursive ./test",
     "lint": "standard \"test/**/*.js\" \"lib/**/*.js\" --fix"
   },
@@ -38,7 +39,9 @@
         80,
         95
       ]
-    }
+    },
+    "reporter": [ "html", "json" ],
+    "report-dir": "./coverage"
   },
   "repository": {
     "type": "git",
@@ -55,6 +58,7 @@
     "chai": "^3.5.0",
     "coveralls": "^2.13.1",
     "ioredis": "3.x",
+    "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^3.4.2",
     "mongodb": "2.x",
     "mongoose": "4.x",
