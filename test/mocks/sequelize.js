@@ -15,7 +15,7 @@ class SequelizeMock {
     }
     this.isConnected = true
 
-    return Promise.accept(true)
+    return Promise.resolve(true)
   }
 }
 
