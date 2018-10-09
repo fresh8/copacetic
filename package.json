@@ -63,8 +63,7 @@
     "ioredis": "3.x",
     "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^3.4.2",
-    "mongodb": "2.x",
-    "mongoose": "4.x",
+    "mongoose": "5.x",
     "nock": "^9.0.13",
     "node-fetch": "1.x",
     "nyc": "^11.0.1",
@@ -84,8 +83,8 @@
   },
   "optionalPeerDependencies": {
     "node-fetch": "1.x",
-    "mongodb": "2.x",
-    "mongoose": "4.x",
+    "mongodb": "3.x",
+    "mongoose": "5.x",
     "ioredis": "3.x",
     "sequelize": "4.x"
   },
