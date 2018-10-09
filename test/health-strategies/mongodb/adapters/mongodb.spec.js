@@ -124,8 +124,6 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
       .check('some-fake-url')
       .catch((err) => {
         expect(err).to.be.ok
-      })
-      .then(() => {
         return strategy.check(connectionUri)
       })
       .then((res) => {
