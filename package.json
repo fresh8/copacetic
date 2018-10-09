@@ -63,6 +63,7 @@
     "ioredis": "3.x",
     "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^3.4.2",
+    "mongodb-memory-server": "^2.4.3",
     "mongoose": "5.x",
     "nock": "^9.0.13",
     "node-fetch": "1.x",
