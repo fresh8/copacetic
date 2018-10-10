@@ -1,6 +1,6 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
