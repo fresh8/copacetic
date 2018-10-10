@@ -45,14 +45,14 @@ describe('Cluster Attach', () => {
 
   describe('master', () => {
     it('should reject being attached to a copacetic not in Promise mode', () => {
-      const { attach, copacetic } = mockForCluster({ isMaster: true }, {promiseMode: false})
+      const { attach, copacetic } = mockForCluster({ isMaster: true }, { promiseMode: false })
       expect(attach.bind(attach, copacetic)).to.throw('emitter')
     })
 
     it('should automatically add workers as dependencies', () => {
       const { attach, copacetic } = mockForCluster({
         isMaster: true,
-        workers: [{id: 1, healthSummary: 'healthy'}, {id: 2, healthSummary: 'not healthy'}]
+        workers: [{ id: 1, healthSummary: 'healthy' }, { id: 2, healthSummary: 'not healthy' }]
       })
       attach(copacetic)
       const health = copacetic.healthInfo
@@ -64,7 +64,7 @@ describe('Cluster Attach', () => {
 
       attach(copacetic)
 
-      cluster.mockNewWorker({id: 1})
+      cluster.mockNewWorker({ id: 1 })
       expect(copacetic.healthInfo.length).to.equal(1)
     })
 
@@ -74,8 +74,8 @@ describe('Cluster Attach', () => {
 
       attach(copacetic)
 
-      cluster.mockNewWorker({id: 1})
-      cluster.mockNewWorker({id: 1})
+      cluster.mockNewWorker({ id: 1 })
+      cluster.mockNewWorker({ id: 1 })
       expect(copacetic.healthInfo.length).to.equal(1)
     })
 
@@ -83,8 +83,8 @@ describe('Cluster Attach', () => {
       const { attach, copacetic, cluster } = mockForCluster({
         isMaster: true,
         workers: [
-          {id: 1, healthSummary: 'healthy'},
-          {id: 2, healthSummary: 'not healthy'}
+          { id: 1, healthSummary: 'healthy' },
+          { id: 2, healthSummary: 'not healthy' }
         ]
       })
       attach(copacetic)
@@ -96,10 +96,10 @@ describe('Cluster Attach', () => {
       const { attach, copacetic, cluster } = mockForCluster({
         isMaster: true,
         workers: [
-          {id: 1, healthSummary: 'healthy'}
+          { id: 1, healthSummary: 'healthy' }
         ]
       })
-      const {clusterMessages} = attach(copacetic)
+      const { clusterMessages } = attach(copacetic)
 
       cluster.isMaster = false
 
@@ -126,7 +126,7 @@ describe('Cluster Attach', () => {
         const { attach, copacetic } = mockForCluster({
           isMaster: true,
           workers: [
-            {id: 1, healthSummary: 'healthy'}
+            { id: 1, healthSummary: 'healthy' }
           ]
         })
         attach(copacetic)
@@ -137,10 +137,10 @@ describe('Cluster Attach', () => {
         const { attach, copacetic } = mockForCluster({
           isMaster: true,
           workers: [
-            {id: 1, healthSummary: 'healthy'}
+            { id: 1, healthSummary: 'healthy' }
           ]
         })
-        attach(copacetic, {dependency: {level: 'Unicorn'}})
+        attach(copacetic, { dependency: { level: 'Unicorn' } })
         expect(copacetic.dependencyIndex['1'].level).to.equal('Unicorn')
       })
     })
@@ -150,10 +150,10 @@ describe('Cluster Attach', () => {
     it('should expose a function to ask master what the health of the entire cluster is', () => {
       const { attach, copacetic } = mockForCluster({
         isMaster: false,
-        worker: {id: 1},
+        worker: { id: 1 },
         masterListeners: {
           [`on${constants.EVENT_NAMES.ASK_MASTER_HEALTH}`]: (data, notACallback) => { // `notACallback` is totally a callback but it avoids the linter complaint.
-            notACallback({isHealthy: true})
+            notACallback({ isHealthy: true })
           }
         }
       })
@@ -173,24 +173,24 @@ describe('Cluster Attach', () => {
             reject(e)
           }
         })
-        .catch(reject)
+          .catch(reject)
       })
     })
 
     it("should register listener for master's health enquiry", () => {
       const { attach, copacetic, cluster } = mockForCluster({
         isMaster: false,
-        worker: {id: 2},
-        workers: [{id: 1}, {id: 2}]
+        worker: { id: 2 },
+        workers: [{ id: 1 }, { id: 2 }]
       })
 
-      const {clusterMessages} = attach(copacetic)
+      const { clusterMessages } = attach(copacetic)
 
       cluster.isMaster = true
 
       return new Promise((resolve, reject) => {
         try {
-          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}`, {recipient: 2}, health => {
+          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}`, { recipient: 2 }, health => {
             try {
               assert.isDefined(health)
               assert.isDefined(health.isHealthy)
@@ -206,22 +206,22 @@ describe('Cluster Attach', () => {
       })
     })
 
-    it("does not reply to messages meant for other workers", () => {
+    it('does not reply to messages meant for other workers', () => {
       const { attach, copacetic, cluster } = mockForCluster({
         isMaster: false,
-        worker: {id: 1},
-        workers: [{id: 1}, {id: 2}]
+        worker: { id: 1 },
+        workers: [{ id: 1 }, { id: 2 }]
       })
 
-      const {clusterMessages} = attach(copacetic)
+      const { clusterMessages } = attach(copacetic)
 
       cluster.isMaster = true
 
       return new Promise((resolve, reject) => {
-        setTimeout(resolve, 300) //timeout early, if the process responds it will be quicker than 300ms
+        setTimeout(resolve, 300) // timeout early, if the process responds it will be quicker than 300ms
         try {
-          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}`, {recipient: 2}, health => {
-            reject("This event should not have been replied to")
+          clusterMessages.send(`${constants.EVENT_NAMES.MASTER_ASKING_HEALTH}`, { recipient: 2 }, health => {
+            reject('This event should not have been replied to')
           })
         } catch (e) {
           reject(e)

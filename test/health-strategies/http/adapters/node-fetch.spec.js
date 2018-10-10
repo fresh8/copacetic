@@ -21,8 +21,8 @@ describe('HttpStrategy - using the node-fetch adapter', () => {
 
   it('should return the response on success', () => {
     nock('http://example.com')
-        .get('/')
-        .reply(200)
+      .get('/')
+      .reply(200)
 
     return HttpStrategy()
       .check('http://example.com')
@@ -33,8 +33,8 @@ describe('HttpStrategy - using the node-fetch adapter', () => {
 
   it('should return an error on failure', () => {
     nock('http://example.com')
-        .get('/')
-        .reply(400)
+      .get('/')
+      .reply(400)
 
     return HttpStrategy()
       .check('http://example.com')

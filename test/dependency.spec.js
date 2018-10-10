@@ -10,7 +10,7 @@ describe('Dependency', () => {
     const Injector = require('../lib/util/injector')
     const mockedStrategyInjector = Injector((name) => strategy)
     DependencyFactory = require('../lib/dependency')
-    dependencyConfig.strategy = {type: 'mockedStrategy'}
+    dependencyConfig.strategy = { type: 'mockedStrategy' }
     return DependencyFactory(mockedStrategyInjector)(dependencyConfig)
   }
 
@@ -34,11 +34,10 @@ describe('Dependency', () => {
     expect(Dependency).to.be.a('function')
   })
 
-  it("should accept not having a url parameter", () => {
-    const dependency = Dependency({ name: 'test-dependency'})
+  it('should accept not having a url parameter', () => {
+    const dependency = Dependency({ name: 'test-dependency' })
     assert.isUndefined(dependency.url)
   })
-
 
   describe('onHealthy()', () => {
     it('should mark a dependency as healthy', () => {
@@ -143,13 +142,13 @@ describe('Dependency', () => {
           expect(summary.whatDidISay).to.equal('fine')
           return new Promise((resolve, reject) => {
             dependency.check() // check again, unhealthy
-            .then(reject)
-            .catch(() => {
-              const summary = dependency.healthSummary
-              expect(summary.healthy).to.equal(false)
-              assert.isUndefined(summary.whatDidISay) // when in throwing mode, there is no way to provide health information to the summary
-              resolve()
-            })
+              .then(reject)
+              .catch(() => {
+                const summary = dependency.healthSummary
+                expect(summary.healthy).to.equal(false)
+                assert.isUndefined(summary.whatDidISay) // when in throwing mode, there is no way to provide health information to the summary
+                resolve()
+              })
           })
         })
     })
@@ -158,16 +157,16 @@ describe('Dependency', () => {
   describe('check()', () => {
     it('should return a promise', () => {
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
 
       expect(dependency.check().then).to.be.a('function')
     })
 
     it('should return health info when healthy', () => {
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
 
       return dependency
         .check()
@@ -183,8 +182,8 @@ describe('Dependency', () => {
 
     it('should return health info when unhealthy', () => {
       nock('http://example.com')
-          .get('/')
-          .reply(404)
+        .get('/')
+        .reply(404)
 
       return dependency
         .check(1, 500)
@@ -200,8 +199,8 @@ describe('Dependency', () => {
 
     it('should check a dependency\'s health if retries > 1', () => {
       nock('http://example.com')
-          .get('/')
-          .reply(400)
+        .get('/')
+        .reply(400)
 
       return dependency
         .check(2, 100)
@@ -248,12 +247,12 @@ describe('Dependency', () => {
         })
         return new Promise((resolve, reject) => {
           dependency
-          .check()
-          .then(reject)
-          .catch((r) => {
-            expect(r.healthy).to.equal(false)
-            resolve()
-          })
+            .check()
+            .then(reject)
+            .catch((r) => {
+              expect(r.healthy).to.equal(false)
+              resolve()
+            })
         })
       })
     })

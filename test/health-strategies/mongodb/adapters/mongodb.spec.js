@@ -2,7 +2,7 @@ const MongoClient = require('mongodb')
 const expect = require('chai').expect
 
 const MongodbMemoryServer = require('mongodb-memory-server').MongoMemoryServer
-const mongoServer = new MongodbMemoryServer({binary: { version: '3.2.9' }})
+const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
 
 describe('MongodbStrategy - using the mongodb adapter', () => {
   let connectionUri
@@ -19,7 +19,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
       }))
     )
     return mongoServer.getConnectionString()
-      .then(function(uri) {
+      .then(function (uri) {
         connectionUri = uri
       })
   })
@@ -48,7 +48,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
     const strategy = MongodbStrategy()
     expect(strategy.adapter.isConnected).to.equal(false)
 
-    return strategy.adapter.connect(connectionUri)  
+    return strategy.adapter.connect(connectionUri)
       .then(() => {
         expect(strategy.adapter.isConnected).to.equal(true)
       })
@@ -57,7 +57,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
   it('should close the connection', () => {
     const strategy = MongodbStrategy()
 
-    return strategy.adapter.connect(connectionUri)  
+    return strategy.adapter.connect(connectionUri)
       .then(() => {
         strategy.adapter.close()
         expect(strategy.adapter.isConnected).to.equal(false)
@@ -96,9 +96,9 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
   })
 
   it('should handle becoming healthy --> unhealthy', () => {
-    const mongoServer = new MongodbMemoryServer({binary: { version: '3.2.9' }})
+    const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
     return mongoServer.getConnectionString()
-      .then(function(uri) {
+      .then(function (uri) {
         const strategy = MongodbStrategy()
 
         return strategy.check(uri)
@@ -114,7 +114,7 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
           .catch((err) => {
             expect(err.message).to.contain('failed to connect')
           })
-    })
+      })
   })
 
   it('should handle becoming unhealthy --> healthy', () => {

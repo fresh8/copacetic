@@ -1,7 +1,7 @@
 const expect = require('chai').expect
 
 const MongodbMemoryServer = require('mongodb-memory-server').MongoMemoryServer
-const mongoServer = new MongodbMemoryServer({binary: { version: '3.2.9' }})
+const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
 const mongoose = require('mongoose')
 
 describe('MongodbStrategy - using the mongoose adapter', () => {
@@ -21,7 +21,7 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
       )
     }
     return mongoServer.getConnectionString()
-      .then(function(uri) {
+      .then(function (uri) {
         connectionUri = uri
       })
   })
@@ -85,7 +85,7 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
 
   it('should return an error when mongo is unhealthy', () => {
     const strategy = provideMongodbStrategy()()
-    const mongoServer = new MongodbMemoryServer({binary: { version: '3.2.9' }})
+    const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
     let connectionUri
     return mongoServer.getConnectionString()
       .then(uri => {
@@ -103,7 +103,7 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
 
   it('should handle becoming healthy --> unhealthy', () => {
     const strategy = provideMongodbStrategy()()
-    const mongoServer = new MongodbMemoryServer({binary: { version: '3.2.9' }})
+    const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
     let connectionUri
     return mongoServer.getConnectionString()
       .then(uri => {
