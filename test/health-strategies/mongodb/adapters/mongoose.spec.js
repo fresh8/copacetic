@@ -1,6 +1,11 @@
 const expect = require('chai').expect
 
+const MongodbMemoryServer = require('mongodb-memory-server').MongoMemoryServer
+const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
+const mongoose = require('mongoose')
+
 describe('MongodbStrategy - using the mongoose adapter', () => {
+  let connectionUri
   let provideMongodbStrategy
 
   before(() => {
@@ -8,14 +13,17 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
       const CodependencyMock = require('../../../mocks/codependency')
       const Injector = require('../../../../lib/util/injector')
       const MongodbStrategyFactory = require('../../../../lib/health-strategies/mongodb')
-      const MockMongooseClient = require('../../../mocks/mongoose')
 
       return MongodbStrategyFactory(
         Injector(CodependencyMock({
-          mongoose: new MockMongooseClient(...args)
+          mongoose: mongoose
         }))
       )
     }
+    return mongoServer.getConnectionString()
+      .then(function (uri) {
+        connectionUri = uri
+      })
   })
 
   describe('Definition', () => {
@@ -49,30 +57,26 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
   it('should cleanup the connection', () => {
     const strategy = provideMongodbStrategy()()
 
-    strategy
-      .check('some-fake-url')
+    return strategy
+      .check(connectionUri)
       .then(() => {
         expect(strategy.adapter.isConnected).to.equal(true)
-
-        strategy.cleanup()
+        return strategy.cleanup()
       })
-
-    strategy.adapter.connection.on('close', () => {
-      expect(strategy.adapter.isConnected).to.equal(false)
-    })
+      .then(() => {
+        expect(strategy.adapter.isConnected).to.equal(false)
+      })
   })
 
-  it('should return true when mongo is health', () => {
+  it('should return true when mongo is healthy', () => {
     const strategy = provideMongodbStrategy()()
 
-    // It should connect to redis first
-    strategy
-      .check('some-fake-url')
+    return strategy
+      .check(connectionUri)
       .then((res) => {
         expect(res).to.equal(true)
 
-        // It should ping redis once connected
-        return strategy.check('some-fake-url')
+        return strategy.check(connectionUri)
       })
       .then((res) => {
         expect(res).to.equal(true)
@@ -80,26 +84,35 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
   })
 
   it('should return an error when mongo is unhealthy', () => {
-    const strategy = provideMongodbStrategy('unreachable')()
-
-    strategy
-      .check('some-fake-url')
+    const strategy = provideMongodbStrategy()()
+    const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
+    let connectionUri
+    return mongoServer.getConnectionString()
+      .then(uri => {
+        connectionUri = uri
+        return mongoServer.stop()
+      })
+      .then(() => {
+        return strategy
+          .check(connectionUri)
+      })
       .catch((err) => {
-        expect(err.message).to.equal('unreachable')
+        expect(err.message).to.contain('ECONNREFUSED')
       })
   })
 
   it('should handle becoming healthy --> unhealthy', () => {
     const strategy = provideMongodbStrategy()()
-
-    strategy
-      .check('some-fake-url')
+    const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
+    let connectionUri
+    return mongoServer.getConnectionString()
+      .then(uri => {
+        connectionUri = uri
+        return strategy.check(uri)
+      })
       .then((res) => {
         expect(res).to.equal(true)
-
-        strategy.adapter.connection.errmsg = 'unreachable'
-
-        return strategy.check('some-fake-url')
+        return strategy.check(connectionUri)
       })
       .catch((err) => {
         expect(err.message).to.equal('unreachable')
@@ -109,13 +122,12 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
   it('should handle becoming unhealthy --> healthy', () => {
     const strategy = provideMongodbStrategy('unreachable')()
 
-    strategy
+    return strategy
       .check('some-fake-url')
       .catch((err) => {
-        expect(err.message).to.equal('unreachable')
-        strategy.adapter.client.errmsg = false
+        expect(err).to.be.ok
 
-        return strategy.check('some-fake-url')
+        return strategy.check(connectionUri)
       })
       .then((res) => {
         expect(res).to.equal(true)
@@ -126,7 +138,7 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
     it('should throw an error if no connection exists', () => {
       const strategy = provideMongodbStrategy('unreachable')()
 
-      strategy
+      return strategy
         .adapter
         .close()
         .catch((err) => {
@@ -134,26 +146,11 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
         })
     })
 
-    it('should return an error if something went wrong when closing the connection', () => {
-      const strategy = provideMongodbStrategy()()
-
-      strategy
-        .check('some-fake-url')
-        .then(() => {
-          strategy.adapter.connection.errmsg = 'unreachable'
-
-          return strategy.adapter.close()
-        })
-        .catch((err) => {
-          expect(err.message).to.equal('unreachable')
-        })
-    })
-
     it('should return true if everything went OK', () => {
       const strategy = provideMongodbStrategy()()
 
-      strategy
-        .check('some-fake-url')
+      return strategy
+        .check(connectionUri)
         .then(() => {
           return strategy.adapter.close()
         })
@@ -167,8 +164,8 @@ describe('MongodbStrategy - using the mongoose adapter', () => {
     it('should remove the connection if an error occurs', () => {
       const strategy = provideMongodbStrategy()()
 
-      strategy
-        .check('some-fake-url')
+      return strategy
+        .check(connectionUri)
         .then(() => {
           strategy.adapter.connection.errmsg = 'unreachable'
           return strategy.check()

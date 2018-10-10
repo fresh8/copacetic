@@ -42,8 +42,8 @@ describe('Copacetic', () => {
       })
 
       nock('http://example.com')
-          .get('/')
-          .reply(400)
+        .get('/')
+        .reply(400)
 
       return copacetic
         .check({ name: 'My-Dependency' })
@@ -62,8 +62,8 @@ describe('Copacetic', () => {
       })
 
       nock('http://example.com')
-          .get('/')
-          .reply(400)
+        .get('/')
+        .reply(400)
 
       return copacetic
         .check({ name: 'My-Dependency' })
@@ -82,8 +82,8 @@ describe('Copacetic', () => {
       })
 
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
 
       return copacetic
         .check({ name: 'My-Dependency' })
@@ -235,11 +235,11 @@ describe('Copacetic', () => {
       })
 
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
       nock('http://other-example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
     })
 
     it('should check the health of all registered dependencies', (done) => {
@@ -299,8 +299,8 @@ describe('Copacetic', () => {
         })
 
         nock('http://example.com')
-            .get('/')
-            .reply(200)
+          .get('/')
+          .reply(200)
 
         copacetic
           .check({ name: 'My-Dependency' })
@@ -316,8 +316,8 @@ describe('Copacetic', () => {
       })
       it('should emit an "unhealthy" event when checking a single unhealthy dependency', (done) => {
         nock('http://example.com')
-            .get('/')
-            .reply(400)
+          .get('/')
+          .reply(400)
 
         copacetic
           .check({ name: 'My-Dependency' })
@@ -334,8 +334,8 @@ describe('Copacetic', () => {
 
       it('should return a promise when not in eventEmitterMode', () => {
         nock('http://example.com')
-            .get('/')
-            .reply(200)
+          .get('/')
+          .reply(200)
 
         copacetic.eventEmitterMode = false
 
@@ -359,17 +359,17 @@ describe('Copacetic', () => {
           name: 'My-Dependency',
           url: 'http://example.com'
         })
-        .registerDependency({
-          name: 'My-Other-Dependency',
-          url: 'http://dankdependency.com'
-        })
+          .registerDependency({
+            name: 'My-Other-Dependency',
+            url: 'http://dankdependency.com'
+          })
 
         nock('http://example.com')
-            .get('/')
-            .reply(200)
+          .get('/')
+          .reply(200)
         nock('http://dankdependency.com')
-            .get('/')
-            .reply(400)
+          .get('/')
+          .reply(400)
 
         copacetic
           .check({
@@ -438,11 +438,11 @@ describe('Copacetic', () => {
       })
 
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
       nock('http://dankdependency.com')
-          .get('/')
-          .reply(400)
+        .get('/')
+        .reply(400)
 
       copacetic
         .poll({
@@ -479,8 +479,8 @@ describe('Copacetic', () => {
         url: 'http://example.com'
       })
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
 
       return copacetic
         .poll({ name: 'My-Dependency' })
@@ -507,8 +507,8 @@ describe('Copacetic', () => {
       })
 
       nock('http://example.com')
-          .get('/')
-          .reply(200)
+        .get('/')
+        .reply(200)
 
       copacetic.pollAll()
       expect(copacetic.isPolling).to.equal(true)

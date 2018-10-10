@@ -7,11 +7,11 @@ describe('middleware', () => {
 
   const nockIt = () => {
     nock('http://one-example.com')
-        .get('/')
-        .reply(200)
+      .get('/')
+      .reply(200)
     nock('http://two-example.com')
-        .get('/')
-        .reply(400)
+      .get('/')
+      .reply(400)
   }
 
   const res = { json: stuff => stuff, sendStatus: stuff => stuff }

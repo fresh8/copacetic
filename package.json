@@ -1,13 +1,13 @@
 {
   "name": "@fresh8/copacetic",
-  "version": "3.6.1",
+  "version": "4.0.0",
   "description": "A package to help your service check the health of its dependencies.",
   "main": "index.js",
   "scripts": {
     "coverage": "nyc npm test && nyc report",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "doc": "jsdoc2md --template README.hbs lib/copacetic.js > README.md",
-    "test": "mocha --recursive ./test",
+    "test": "mocha --timeout 60000 --recursive ./test",
     "lint": "standard \"test/**/*.js\" \"lib/**/*.js\" --fix"
   },
   "engines": {
@@ -59,13 +59,12 @@
   "devDependencies": {
     "@types/node": "^6.0.78",
     "chai": "^3.5.0",
-    "cluster-messages": "1.1.2",
     "coveralls": "^2.13.1",
     "ioredis": "3.x",
     "jsdoc-to-markdown": "^4.0.1",
     "mocha": "^3.4.2",
-    "mongodb": "2.x",
-    "mongoose": "4.x",
+    "mongodb-memory-server": "^2.4.3",
+    "mongoose": "5.x",
     "nock": "^9.0.13",
     "node-fetch": "1.x",
     "nyc": "^11.0.1",
@@ -74,6 +73,7 @@
     "standard": "^10.0.3"
   },
   "dependencies": {
+    "cluster-messages": "^1.1.2",
     "codependency": "^2.0.1",
     "human-interval": "^0.1.6",
     "lodash.clonedeep": "^4.5.0",
@@ -83,10 +83,9 @@
     "precond": "^0.2.3"
   },
   "optionalPeerDependencies": {
-    "cluster-messages": "1.1.2",
     "node-fetch": "1.x",
-    "mongodb": "2.x",
-    "mongoose": "4.x",
+    "mongodb": "3.x",
+    "mongoose": "5.x",
     "ioredis": "3.x",
     "sequelize": "4.x"
   },
