@@ -78,7 +78,7 @@ describe('Cluster Message Adapter', () => {
         ]
       })
 
-      return strategy.adapter.checkHealth({id: 1})
+      return strategy.adapter.checkHealth({ id: 1 })
         .then(res => expect(res.isHealthy).to.equal(true))
     })
 
@@ -107,7 +107,7 @@ describe('Cluster Message Adapter', () => {
         ]
       })
 
-      return strategy.adapter.checkHealth({id: 2})
+      return strategy.adapter.checkHealth({ id: 2 })
         .then((res) => {
           expect(res.isHealthy).to.equal(false)
           expect(res.name).to.equal(2)
@@ -125,10 +125,10 @@ describe('Cluster Message Adapter', () => {
             }
           }
         ]
-      }, {playDead: true}, {timeout: 500})
+      }, { playDead: true }, { timeout: 500 })
 
       return new Promise((resolve, reject) => {
-        strategy.adapter.checkHealth({id: 1})
+        strategy.adapter.checkHealth({ id: 1 })
           .then(reject)
           .catch((e) => {
             try {

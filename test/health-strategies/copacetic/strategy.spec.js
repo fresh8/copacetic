@@ -93,8 +93,8 @@ describe('Copacetic Strategy', () => {
     })
 
     it('should report health correctly', () => {
-      expect(strategy.areYouOk({isHealthy: false})).to.equal(false)
-      expect(strategy.areYouOk({isHealthy: true})).to.equal(true)
+      expect(strategy.areYouOk({ isHealthy: false })).to.equal(false)
+      expect(strategy.areYouOk({ isHealthy: true })).to.equal(true)
     })
   })
 

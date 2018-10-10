@@ -1,28 +1,11 @@
+const MongoClient = require('mongodb')
 const expect = require('chai').expect
-const noop = require('node-noop').noop
+
+const MongodbMemoryServer = require('mongodb-memory-server').MongoMemoryServer
+const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
 
 describe('MongodbStrategy - using the mongodb adapter', () => {
-  const mockMongodbClient = {
-    MongoClient: {
-      connection: null,
-      shouldAccept: true,
-      err: null,
-      connect (url, opts, cb) {
-        this.shouldAccept ? cb(null, this) : cb(this.err)
-      },
-      command (opts, cb) {
-        this.shouldAccept ? cb(null, this) : cb(this.err)
-      },
-      on (evt, cb) {
-        this.cb = cb
-      },
-      triggerClose () {
-        this.cb()
-      },
-      close () {}
-    }
-  }
-
+  let connectionUri
   let MongodbStrategy
 
   before(() => {
@@ -32,9 +15,13 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
 
     MongodbStrategy = MongodbStrategyFactory(
       Injector(CodependencyMock({
-        mongodb: mockMongodbClient
+        mongodb: MongoClient
       }))
     )
+    return mongoServer.getConnectionString()
+      .then(function (uri) {
+        connectionUri = uri
+      })
   })
 
   it('should export a function', () => {
@@ -59,98 +46,85 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
 
   it('should return the connection status', () => {
     const strategy = MongodbStrategy()
-    strategy.adapter.connection = null
     expect(strategy.adapter.isConnected).to.equal(false)
 
-    strategy.adapter.connection = { close: noop }
-    expect(strategy.adapter.isConnected).to.equal(true)
+    return strategy.adapter.connect(connectionUri)
+      .then(() => {
+        expect(strategy.adapter.isConnected).to.equal(true)
+      })
   })
 
   it('should close the connection', () => {
     const strategy = MongodbStrategy()
 
-    strategy.adapter.connection = { close: noop }
+    return strategy.adapter.connect(connectionUri)
+      .then(() => {
+        strategy.adapter.close()
+        expect(strategy.adapter.isConnected).to.equal(false)
 
-    strategy.adapter.close()
-    expect(strategy.adapter.isConnected).to.equal(false)
-
-    strategy.adapter.close()
-    expect(strategy.adapter.isConnected).to.equal(false)
+        strategy.adapter.close()
+        expect(strategy.adapter.isConnected).to.equal(false)
+      })
   })
 
   it('should cleanup', () => {
     const strategy = MongodbStrategy()
 
-    return strategy
-      .check('some-fake-url')
+    return strategy.check(connectionUri)
       .then(() => {
         strategy.cleanup()
 
-        expect(strategy.adapter.connection).to.equal(null)
+        expect(strategy.adapter.client).to.equal(null)
       })
   })
 
   it('should return true when mongo is healthy', () => {
     const strategy = MongodbStrategy()
 
-    return strategy
-      .check('some-fake-url')
-      .then((res) => {
-        expect(res).to.equal(true)
-
-        return strategy.check('some-fake-url')
-      })
+    return strategy.check(connectionUri)
       .then((res) => {
         expect(res).to.equal(true)
       })
-      .catch(e => e)
   })
 
   it('should return an error when mongo is unhealthy', () => {
-    mockMongodbClient.MongoClient.shouldAccept = false
-    mockMongodbClient.MongoClient.err = 'Something went wrong!'
-
     return MongodbStrategy()
       .check('some-fake-url')
       .catch((err) => {
-        expect(err).to.equal('Something went wrong!')
+        expect(err.message).to.contain('Invalid schema')
       })
   })
 
   it('should handle becoming healthy --> unhealthy', () => {
-    mockMongodbClient.MongoClient.shouldAccept = true
+    const mongoServer = new MongodbMemoryServer({ binary: { version: '3.2.9' } })
+    return mongoServer.getConnectionString()
+      .then(function (uri) {
+        const strategy = MongodbStrategy()
 
-    const strategy = MongodbStrategy()
-
-    return strategy
-      .check('some-fake-url')
-      .then((res) => {
-        expect(res).to.equal(true)
-      })
-      .then(() => {
-        mockMongodbClient.MongoClient.shouldAccept = false
-
-        return strategy.check('some-fake-url')
-      })
-      .catch((err) => {
-        expect(err).to.equal('Something went wrong!')
+        return strategy.check(uri)
+          .then((res) => {
+            expect(res).to.equal(true)
+          })
+          .then(() => {
+            return mongoServer.stop()
+          })
+          .then(() => {
+            return strategy.check(uri)
+          })
+          .catch((err) => {
+            expect(err.message).to.contain('failed to connect')
+          })
       })
   })
 
   it('should handle becoming unhealthy --> healthy', () => {
-    mockMongodbClient.MongoClient.shouldAccept = false
-
     const strategy = MongodbStrategy()
 
     return strategy
       .check('some-fake-url')
       .catch((err) => {
-        expect(err).to.equal('Something went wrong!')
-      })
-      .then(() => {
-        mockMongodbClient.MongoClient.shouldAccept = true
-
-        return strategy.check('some-fake-url')
+        expect(err).to.be.ok
+        return strategy.check(connectionUri)
       })
       .then((res) => {
         expect(res).to.equal(true)
@@ -161,16 +135,14 @@ describe('MongodbStrategy - using the mongodb adapter', () => {
     const strategy = MongodbStrategy()
 
     return strategy
-      .check('some-fake-url')
+      .check(connectionUri)
       .then((res) => {
         expect(res).to.equal(true)
 
-        mockMongodbClient.MongoClient.triggerClose()
-
-        return strategy.check('some-fake-url')
+        return strategy.adapter.client.close()
       })
-      .catch((err) => {
-        expect(err).to.equal('Something went wrong!')
+      .then(() => {
+        expect(strategy.adapter.isConnected).to.equal(false)
       })
   })
 })
